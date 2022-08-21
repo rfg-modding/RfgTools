@@ -1,0 +1,3 @@
+[submodule "Dependencies/ZlibBeef"]
+	path = Dependencies/ZlibBeef
+	url = https://github.com/Moneyl/ZlibBeef.git

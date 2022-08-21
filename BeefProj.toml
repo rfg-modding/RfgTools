@@ -1,0 +1,7 @@
+FileVersion = 1
+Dependencies = {corlib = "*", Zlib = "*"}
+
+[Project]
+Name = "RfgTools"
+TargetType = "BeefLib"
+StartupObject = "RfgTools.Program"
