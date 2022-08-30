@@ -10,13 +10,13 @@ namespace RfgTools.Formats
 	{
         public class Container
         {
-            String Name = new .() ~delete _;
-            ContainerType Type = .None;
-            ContainerFlags Flags = .None;
-            u16 PrimitiveCount = 0;
-            u32 DataOffset = 0;
-            u32 SizeCount = 0;
-            u32 CompressedSize = 0;
+            public String Name = new .() ~delete _;
+            public ContainerType Type = .None;
+            public ContainerFlags Flags = .None;
+            public u16 PrimitiveCount = 0;
+            public u32 DataOffset = 0;
+            public u32 SizeCount = 0;
+            public u32 CompressedSize = 0;
 
             public List<Primitive> Primitives = new .() ~DeleteContainerAndItems!(_);
             public List<u32> PrimitiveSizes = new .() ~delete _;
@@ -49,13 +49,13 @@ namespace RfgTools.Formats
 
         public class Primitive
         {
-            String Name = new .() ~delete _;
-            PrimitiveType Type = .None;
-            AllocatorType Allocator = .None;
-            PrimitiveFlags Flags = .None;
-            u8 SplitExtIndex = 0;
-            i32 HeaderSize = 0;
-            i32 DataSize = 0;
+            public String Name = new .() ~delete _;
+            public PrimitiveType Type = .None;
+            public AllocatorType Allocator = .None;
+            public PrimitiveFlags Flags = .None;
+            public u8 SplitExtIndex = 0;
+            public i32 HeaderSize = 0;
+            public i32 DataSize = 0;
 
             public void Read(Stream stream)
             {
