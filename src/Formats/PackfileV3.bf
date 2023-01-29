@@ -170,9 +170,9 @@ namespace RfgTools.Formats
             defer delete outputBuffer;
 
             //Read subfile data as one large buffer and inflate it.
-            _input.TryRead(.(inputBuffer));
+            _input.TryRead(inputBuffer);
             ExitCheck!(earlyExitCondition);
-            Zlib.Inflate(.(inputBuffer), .(outputBuffer));
+            Zlib.Inflate(inputBuffer, outputBuffer);
             ExitCheck!(earlyExitCondition);
 
             //Write inflated subfiles to output folder
@@ -200,12 +200,12 @@ namespace RfgTools.Formats
                 defer delete outputBuffer;
 
                 //Read compressed file data into buffer and align to next file
-                _input.TryRead(.(inputBuffer));
+                _input.TryRead(inputBuffer);
                 _input.Align2(2048);
                 ExitCheck!(earlyExitCondition);
 
                 //Decompress file data and write to file
-                Zlib.Inflate(.(inputBuffer), .(outputBuffer));
+                Zlib.Inflate(inputBuffer, outputBuffer);
                 Directory.CreateDirectory(outputFolderPath);
                 File.WriteAll(scope $"{outputFolderPath}"..Append(EntryNames[index]), Span<u8>(outputBuffer));
                 ExitCheck!(earlyExitCondition);
@@ -224,7 +224,7 @@ namespace RfgTools.Formats
                 u8[] buffer = new u8[entry.DataSize];
                 defer delete buffer;
                 _input.Seek((i64)_dataBlockOffset + (i64)entry.DataOffset, .Absolute);
-                _input.TryRead(.(buffer));
+                _input.TryRead(buffer);
                 Directory.CreateDirectory(outputFolderPath);
                 File.WriteAll(scope $"{outputFolderPath}/"..Append(EntryNames[index]), Span<u8>(buffer));
                 ExitCheck!(earlyExitCondition);
@@ -236,7 +236,7 @@ namespace RfgTools.Formats
         //Attempts to extract single file. If it succeeds the user must free the returned Span<u8>
         //Will attempt to extract single file.
         //If the packfile is C&C it will have to extract all subfiles and pull the target. Making it slower for those types.
-        public Result<List<u8>, StringView> ReadSingleFile(StringView name)
+        public Result<u8[], StringView> ReadSingleFile(StringView name)
         {
             if (!_readMetadata)
                 ReadMetadata();
@@ -256,7 +256,6 @@ namespace RfgTools.Formats
                 return .Err("ReadSingleFile failed to find target file in packfile");
 
             //Get target data. Extraction method depends on data format flags
-            List<u8> result = null;
             var entry = ref Entries[targetIndex];
             if (Compressed && Condensed)
             {
@@ -267,36 +266,40 @@ namespace RfgTools.Formats
                 defer delete outputBuffer;
 
                 //Read subfile data as one large buffer and inflate it.
-                _input.TryRead(.(inputBuffer));
-                Zlib.Inflate(.(inputBuffer), .(outputBuffer));
+                _input.Seek(_dataBlockOffset);
+                _input.TryRead(inputBuffer);
+                Zlib.Inflate(inputBuffer, outputBuffer);
 
-                //Copy target data to separate buffer
-                result = new .()..Resize(entry.DataSize);
-                Internal.MemCpy(result.Ptr, outputBuffer.CArray() + entry.DataOffset, entry.DataSize);
+                return outputBuffer;
             }
             else if (Compressed)
             {
                 //Create decompression buffers
                 u8[] inputBuffer = new u8[entry.CompressedDataSize];
-                result = new .()..Resize(entry.DataSize);
+                u8[] outputBuffer = new u8[entry.DataSize];
                 defer delete inputBuffer;
 
-                //Read compressed file data into buffer and align to next file
-                _input.TryRead(.(inputBuffer));
-                _input.Align2(2048);
+                //Seek to entry data. Compressed offset isn't stored so we calculate it by summing previous entries
+                _input.Seek(_dataBlockOffset);
+                for (var entry2 in ref Entries)
+                {
+                    _input.Skip(entry2.CompressedDataSize);
+                    _input.Align2(2048);
+                }
 
-                //Decompress file data and write to file
-                Zlib.Inflate(.(inputBuffer), .(result.Ptr, result.Count));
+                //Read compressed data into buffer and inflate
+                _input.TryRead(inputBuffer);
+                Zlib.Inflate(inputBuffer, outputBuffer);
+                return outputBuffer;
             }
             else
             {
                 //Seek to target and read into buffer
-                result = new .()..Resize(entry.DataSize);
-                _input.Seek((i64)_dataBlockOffset + (i64)entry.DataOffset, .Absolute);
-                _input.TryRead(.(result.Ptr, result.Count));
+                u8[] outputBuffer = new u8[entry.DataSize];
+                _input.Seek((i64)_dataBlockOffset + (i64)entry.DataOffset);
+                _input.TryRead(outputBuffer);
+                return outputBuffer;
             }
-
-            return .Ok(result);
         }
 
         //Fix data offsets. Values in packfile not always valid.
@@ -342,11 +345,13 @@ namespace RfgTools.Formats
                 StringView name = EntryNames[i];
                 if (Path.GetExtension(name, .. scope .()) != ".asm_pc")
                     continue;
-                Result<List<u8>, StringView> readResult = ReadSingleFile(name);
+                Result<u8[], StringView> readResult = ReadSingleFile(name);
                 if (readResult case .Err(let err))
                     return .Err(err);
 
-                Stream stream = new MemoryStream(readResult, true);
+                defer delete readResult.Value;
+                List<u8> bytes = new .(readResult.Value); //Have to make it list because the current MemoryStream constructor doesn't take Span<u8>
+                Stream stream = new MemoryStream(bytes, true);
                 defer delete stream;
                 AsmFileV5 asmFile = new .();
                 if (asmFile.Read(stream, name) case .Err(let err))
