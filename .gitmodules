@@ -1,3 +1,6 @@
 [submodule "Dependencies/ZlibBeef"]
 	path = Dependencies/ZlibBeef
 	url = https://github.com/Moneyl/ZlibBeef.git
+[submodule "Dependencies/Common"]
+	path = Dependencies/Common
+	url = https://github.com/Moneyl/NF_Common.git
