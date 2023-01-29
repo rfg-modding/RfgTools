@@ -1,4 +1,4 @@
-using RfgTools;
+using Common;
 
 namespace RfgTools.Formats
 {

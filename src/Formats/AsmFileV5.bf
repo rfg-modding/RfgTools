@@ -1,6 +1,6 @@
 using System.Collections;
 using System.IO;
-using RfgTools;
+using Common;
 using System;
 
 namespace RfgTools.Formats

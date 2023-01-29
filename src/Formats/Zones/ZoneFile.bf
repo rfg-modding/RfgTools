@@ -1,6 +1,6 @@
 namespace RfgTools.Formats.Zones;
 using Common.Math;
-using RfgTools;
+using Common;
 using System;
 
 //Use to read data from RFG rfgzone_pc and layer_pc files
