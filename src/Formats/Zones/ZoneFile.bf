@@ -1,4 +1,6 @@
 namespace RfgTools.Formats.Zones;
+using System.Collections;
+using RfgTools.Hashing;
 using Common.Math;
 using Common;
 using System;
@@ -6,6 +8,16 @@ using System;
 //Use to read data from RFG rfgzone_pc and layer_pc files
 public class ZoneFile36
 {
+    private u8[] _data ~if (_data != null) delete _; //All file data is loaded into this if Read() is called with useInPlace = false
+    private RfgZoneObject* _firstObject = null; //Array of zone objects. Private so people use the more convenient and less error enumerator + get functions
+    private RfgZoneObject* _lastObject = null;
+    private u32 _objectsSize = 0;
+
+    public Header* Header = null;
+    public RelationData* RelationData = null;
+    public bool Empty => Header == null || Header.NumObjects == 0 || _firstObject == null || _objectsSize == 0;
+    public ZoneObjectEnumerator Objects => .(_firstObject, _lastObject);
+
 #region subtypes
     [CRepr]
     public struct Header
@@ -36,18 +48,10 @@ public class ZoneFile36
     {
         Runtime.Assert(sizeof(Header) == 24, "sizeof(ZoneFile.Header) must be 24 bytes to match RFG zone file format.");
         Runtime.Assert(sizeof(RelationData) == 87368, "sizeof(ZoneFile.RelationData) must be 87368 bytes to match RFG zone file format.");
-        Runtime.Assert(sizeof(ZoneObject) == 56, "sizeof(ZoneObject) must be 56 bytes to match RFG zone file format.");
-        Runtime.Assert(sizeof(ZoneObject.Property) == 8, "sizeof(ZoneObject.Property) must be 8 bytes to match RFG zone file format.");
+        Runtime.Assert(sizeof(RfgZoneObject) == 56, "sizeof(RfgZoneObject) must be 56 bytes to match RFG zone file format.");
+        Runtime.Assert(sizeof(RfgZoneObject.Property) == 8, "sizeof(RfgZoneObject.Property) must be 8 bytes to match RFG zone file format.");
     }
 #endregion subtypes
-
-    private u8[] _data ~if (_data != null) delete _; //All file data is loaded into this.
-    private ZoneObject* _objects = null; //Array of zone objects. Private since it's a pain to use. Use enumerators and array indexors instead.
-    private u32 _objectsSize = 0;
-
-    public Header* Header = null;
-    public RelationData* RelationData = null;
-    public bool Empty => Header == null || Header.NumObjects == 0 || _objects == null || _objectsSize == 0;
 
     //Parse zone file. If useInPlace is true bytes must stay alive for the duration of the ZoneFiles lifetime.
     //useInPlace allows you to use a pre-existing array instead of making a copy. Used in Nanoforge ZoneImporter to avoid duplicating an array of bytes read from a packfile.
@@ -87,21 +91,61 @@ public class ZoneFile36
         //Store objects list ptr
         if (Empty)
         {
-            _objects = null;
+            _firstObject = null;
             _objectsSize = 0;
         }
         else
         {
-            _objects = (ZoneObject*)pos;
+            _firstObject = (RfgZoneObject*)pos;
             _objectsSize = (u32)(end - pos);
         }
 
+        //Find last object
+        u8* current = (u8*)_firstObject;
+        for (int i = 0; i < Header.NumObjects - 1; i++)
+        {
+            current += sizeof(RfgZoneObject) + ((RfgZoneObject*)current).PropBlockSize;
+        }
+        _lastObject = (RfgZoneObject*)current;
+
         return .Ok;
+    }
+
+    public Result<RfgZoneObject*> GetObject(int index)
+    {
+        if (Header == null || _firstObject == null || index >= Header.NumObjects)
+            return .Err;
+
+        return _firstObject + index;
+    }
+
+    public struct ZoneObjectEnumerator : IEnumerator<RfgZoneObject*>
+    {
+        private RfgZoneObject* _curObject = null;
+        private RfgZoneObject* _lastObject = null;
+
+        public this(RfgZoneObject* firstObject, RfgZoneObject* lastObject)
+        {
+            _curObject = firstObject;
+            _lastObject = lastObject;
+        }
+
+        public Result<RfgZoneObject*> GetNext() mut
+        {
+            if (_curObject == _lastObject)
+                return .Err;
+
+            u8* posBytes = (u8*)_curObject;
+            posBytes += sizeof(RfgZoneObject); //Jump past header
+            posBytes += _curObject.PropBlockSize; //Jump past properties
+            _curObject = (RfgZoneObject*)posBytes;
+            return .Ok(_curObject);
+        }
     }
 }
 
 [CRepr]
-public struct ZoneObject
+public struct RfgZoneObject
 {
     public u32 ClassnameHash;
     public u32 Handle;
@@ -116,11 +160,50 @@ public struct ZoneObject
     public u16 NumProps;
     public u16 PropBlockSize;
 
+    public PropertyEnumerator Properties mut => .(FirstProperty(), NumProps);
+    public StringView Classname => HashDictionary.FindOriginString(ClassnameHash).GetValueOrDefault("UnknownClassname");
+
+    private Property* FirstProperty() mut
+    {
+        u8* pos = (u8*)&this;
+        pos += sizeof(RfgZoneObject);
+        return (Property*)pos;
+    }
+
     [CRepr]
     public struct Property
     {
         public u16 Type;
         public u16 Size;
         public u32 NameHash;
+
+        public StringView Classname => HashDictionary.FindOriginString(NameHash).GetValueOrDefault("UnknownProperty");
+    }
+
+    public struct PropertyEnumerator : IEnumerator<Property*>
+    {
+        Property* _curProperty = null;
+        readonly u16 _numProps = 0;
+        u16 _curIndex = 0;
+
+        public this(Property* firstProp, u16 numProps)
+        {
+            _curProperty = firstProp;
+            _numProps = numProps;
+            _curIndex = 0;
+        }
+
+        public Result<Property*> GetNext() mut
+        {
+            if (_curIndex == _numProps - 1)
+                return .Err;
+
+            u8* propBytes = (u8*)_curProperty;
+            propBytes += sizeof(Property) + _curProperty.Size;
+            _curProperty = (Property*)propBytes;
+            _curIndex++;
+
+            return _curProperty;
+        }
     }
 }
