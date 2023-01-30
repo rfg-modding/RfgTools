@@ -18,6 +18,8 @@ public class ZoneFile36
     public bool Empty => Header == null || Header.NumObjects == 0 || _firstObject == null || _objectsSize == 0;
     public ZoneObjectEnumerator Objects => .(_firstObject, _lastObject);
 
+    public StringView DistrictName => Header != null ? HashDictionary.FindOriginString(Header.DistrictHash).GetValueOrDefault("Unknown") : "Unknown";
+
 #region subtypes
     [CRepr]
     public struct Header
@@ -89,7 +91,7 @@ public class ZoneFile36
         }
 
         //Store objects list ptr
-        if (Empty)
+        if (Header == null || Header.NumObjects == 0)
         {
             _firstObject = null;
             _objectsSize = 0;
@@ -121,6 +123,7 @@ public class ZoneFile36
 
     public struct ZoneObjectEnumerator : IEnumerator<RfgZoneObject*>
     {
+        private int _index = 0;
         private RfgZoneObject* _curObject = null;
         private RfgZoneObject* _lastObject = null;
 
@@ -134,12 +137,18 @@ public class ZoneFile36
         {
             if (_curObject == _lastObject)
                 return .Err;
+            if (_index == 0)
+            {
+                _index++;
+                return _curObject;
+            }    
 
             u8* posBytes = (u8*)_curObject;
             posBytes += sizeof(RfgZoneObject); //Jump past header
             posBytes += _curObject.PropBlockSize; //Jump past properties
             _curObject = (RfgZoneObject*)posBytes;
-            return .Ok(_curObject);
+            _index++;
+            return _curObject;
         }
     }
 }
@@ -162,12 +171,14 @@ public struct RfgZoneObject
 
     public PropertyEnumerator Properties mut => .(FirstProperty(), NumProps);
     public StringView Classname => HashDictionary.FindOriginString(ClassnameHash).GetValueOrDefault("UnknownClassname");
+    public static u32 InvalidHandle => 0xFFFFFFFF;
 
     private Property* FirstProperty() mut
     {
         u8* pos = (u8*)&this;
         pos += sizeof(RfgZoneObject);
-        return (Property*)pos;
+        Property* firstProp = (Property*)pos;
+        return firstProp;
     }
 
     [CRepr]
@@ -177,7 +188,7 @@ public struct RfgZoneObject
         public u16 Size;
         public u32 NameHash;
 
-        public StringView Classname => HashDictionary.FindOriginString(NameHash).GetValueOrDefault("UnknownProperty");
+        public StringView Name => HashDictionary.FindOriginString(NameHash).GetValueOrDefault("UnknownProperty");
     }
 
     public struct PropertyEnumerator : IEnumerator<Property*>
@@ -195,11 +206,18 @@ public struct RfgZoneObject
 
         public Result<Property*> GetNext() mut
         {
+            if (_numProps == 0)
+                return .Err;
             if (_curIndex == _numProps - 1)
                 return .Err;
+            if (_curIndex == 0)
+            {
+                _curIndex++;
+				return _curProperty;
+			}
 
             u8* propBytes = (u8*)_curProperty;
-            propBytes += sizeof(Property) + _curProperty.Size;
+            propBytes += sizeof(Property) + _curProperty.Size + (int)System.IO.Stream.CalcAlignment(_curProperty.Size, 4);
             _curProperty = (Property*)propBytes;
             _curIndex++;
 
