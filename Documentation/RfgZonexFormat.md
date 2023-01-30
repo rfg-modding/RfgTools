@@ -33,7 +33,7 @@ It's unknown if this has any use in the release version of the game. This might 
 
 ----------------
 
-### **obj_zone** (*inherits **object***)
+### **obj_zone** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Each zone has one of these objects. They sit at the center of the zone and define the terrain file to use for that zone.
 
 
@@ -69,7 +69,7 @@ Default = 80.0f
 
 ----------------
 
-### **object_bounding_box** (*inherits **object***)
+### **object_bounding_box** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 General bounding box used by the game for mission scripting.
 
 
@@ -86,7 +86,7 @@ Default = "None"
 
 ----------------
 
-### **object_dummy** (*inherits **object***)
+### **object_dummy** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Dummy object used for scripting.
 
 
@@ -99,130 +99,130 @@ Options = {"None", "Tech Reponse Pos", "VRail Spawn", "Demo Master", "Cutscene",
 ----------------
 
 
-### **player_start** (*inherits **object***)
+### **player_start** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **trigger_region** (*inherits **object***)
+### **trigger_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_mover** (*inherits **object***)
+### **object_mover** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **general_mover** (*inherits **object_mover***)
+### **general_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
 
-### **rfg_mover** (*inherits **object_mover***)
+### **rfg_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
 
-### **shape_cutter** (*inherits **object***)
+### **shape_cutter** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_effect** (*inherits **object***)
+### **object_effect** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **item** (*inherits **object***)
+### **item** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **weapon** (*inherits **item***)
+### **weapon** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
 
-### **ladder** (*inherits **object***)
+### **ladder** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **obj_light** (*inherits **object***)
+### **obj_light** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
 
 ## MP only objects
 These types are only used in multiplayer maps.
 
-### **multi_object_marker** (*inherits **object***)
+### **multi_object_marker** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **multi_object_flag** (*inherits **item***)
+### **multi_object_flag** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
 
-### **multi_object_backpack** (*inherits **item***)
+### **multi_object_backpack** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
 
 
 ## SP only objects
 These types are only used in single player zones. One exception is `navpoint` and `cover_node` objects found in the Nordic Special map. This is thought to be a mistake or some objects left behind from the remaster developers learning the mapping tools. The section is incomplete since the Nanoforge rewrite doesn't support opening and editing single player maps yet. It'll be updated when SP support is added.
 
-### **navpoint** (*inherits **object***)
+### **navpoint** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Thought to be used by AI for navigation.
 
-### **cover_node** (*inherits **object***)
+### **cover_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Thought to be used for the players cover system.
 
-### **constraint** (*inherits **object***)
+### **constraint** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_squad** (*inherits **object***)
+### **object_squad** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_turret_spawn_node** (*inherits **object***)
+### **object_turret_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_air_strike_defense_node** (*inherits **object***)
+### **object_air_strike_defense_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Start location for a cancelled or incomplete activity.
 
-### **object_spawn_region** (*inherits **object***)
+### **object_spawn_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_demolitions_master_node** (*inherits **object***)
+### **object_demolitions_master_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_convoy** (*inherits **object***)
+### **object_convoy** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_convoy_end_point** (*inherits **object***)
+### **object_convoy_end_point** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_courier_end_point** (*inherits **object***)
+### **object_courier_end_point** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_vehicle_spawn_node** (*inherits **object***)
+### **object_vehicle_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_riding_shotgun_node** (*inherits **object***)
+### **object_riding_shotgun_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_area_defense_node** (*inherits **object***)
+### **object_area_defense_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_action_node** (*inherits **object***)
+### **object_action_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_raid_node** (*inherits **object***)
+### **object_raid_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_guard_node** (*inherits **object***)
+### **object_guard_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_house_arrest_node** (*inherits **object***)
+### **object_house_arrest_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_safehouse** (*inherits **object***)
+### **object_safehouse** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_activity_spawn** (*inherits **object***)
+### **object_activity_spawn** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_squad_spawn_node** (*inherits **object***)
+### **object_squad_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_upgrade_node** (*inherits **object***)
+### **object_upgrade_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_path_road** (*inherits **object***)
+### **object_path_road** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_bftp_node** (*inherits **object***)
+### **object_bftp_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_mission_start_node** (*inherits **object***)
+### **object_mission_start_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **marauder_ambush_region** (*inherits **object***)
+### **marauder_ambush_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_roadblock_node** (*inherits **object***)
+### **object_roadblock_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_restricted_area** (*inherits **object***)
+### **object_restricted_area** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_delivery_node** (*inherits **object***)
+### **object_delivery_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_ambient_behavior_region** (*inherits **object***)
+### **object_ambient_behavior_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_npc_spawn_node** (*inherits **object***)
+### **object_npc_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_patrol** (*inherits **object***)
+### **object_patrol** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
 ## Runtime objects
 These types aren't found in vanilla zone files. They're only created by the game at runtime. No one has tested adding one of these to a map at the time of writing since Nanoforge doesn't support them yet. The section is incomplete for the same reason.
 
-### **vehicle** (*inherits **object***)
+### **vehicle** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **automobile** (*inherits **vehicle***)
+### **automobile** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
 
-### **walker** (*inherits **vehicle***)
+### **walker** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
 
-### **flyer** (*inherits **vehicle***)
+### **flyer** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
 
-### **human** (*inherits **object***)
+### **human** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **npc** (*inherits **human***)
+### **npc** (*inherits [human](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#human-inherits-object)*)
 
-### **player** (*inherits **human***)
+### **player** (*inherits [human](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#human-inherits-object)*)
 
-### **turret** (*inherits **object***)
+### **turret** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **object_debris** (*inherits **object***)
+### **object_debris** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **district** (*inherits **object***)
+### **district** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 
-### **projectile** (*inherits **item***)
+### **projectile** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
