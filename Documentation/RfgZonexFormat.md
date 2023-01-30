@@ -22,14 +22,14 @@ The base type inherited by all other objects.
 Object position. If the object has this property then `orient` is set to the identity matrix.
 
 
-**op** (*ObjectProperties*, Type=5, Size=48, Optional):
+**op** (Type=5, Size=48, Optional):
 
 Position (Vec3) and orient (Mat33). This will be ignored if the object also has a `just_pos` property.
 
 
 **display_name** (*string*, Type=4, Optional):
 
-It's unknown if this has any use in the release version of the game. This might be a remnant from CLOE. The game seems to store the name at runtime, so it might be useful for locating items when we eventually have in game debugging tools.
+It's unknown if this has any use in the release version of the game. This might be a remnant from CLOE. The game seems to store the name at runtime, so it might be useful for locating objects when we eventually have in game debugging tools.
 
 ----------------
 
