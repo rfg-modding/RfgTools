@@ -65,11 +65,11 @@ public class ZoneFile36
         //Make a copy of the data so it stays alive as long as the ZoneFile
         if (!useInPlace)
         {
-			_data = new u8[bytes.Length];
+            _data = new u8[bytes.Length];
             Internal.MemCpy(&_data[0], bytes.Ptr, bytes.Length);
             start = _data.ToByteSpan().Ptr;
             end = _data.ToByteSpan().EndPtr;
-		}
+        }
         u8* pos = start;
 
         //Store header ptr
@@ -213,8 +213,8 @@ public struct RfgZoneObject
             if (_curIndex == 0)
             {
                 _curIndex++;
-				return _curProperty;
-			}
+                return _curProperty;
+            }
 
             u8* propBytes = (u8*)_curProperty;
             propBytes += sizeof(Property) + _curProperty.Size + (int)System.IO.Stream.CalcAlignment(_curProperty.Size, 4);
