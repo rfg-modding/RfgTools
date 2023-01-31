@@ -1,6 +1,8 @@
 
 # RFG zone file format
-This file describes the zone format used by RFG. These files have either the `.rfgzone_pc` or `.layer_pc` extension. They contain a list of objects and their properties for a single map zone. Multiplayer and Wrecking Crew maps all consist of one zone. The Singleplayer maps consist of many zones. 
+This file describes the zone format used by RFG. These files have either the `.rfgzone_pc` or `.layer_pc` extension. They contain a list of objects and their properties for a single map zone. Multiplayer and Wrecking Crew maps all consist of one zone. Singleplayer maps consist of many zones. 
+
+This document is very incomplete. RFG mapping is still in an early state with very basic tools. As the tools develop we'll be able to test out different properties and improve this file.
 
 # Format description
 This section hasn't been written yet. Please refer to [ZoneFile.bf](https://github.com/Moneyl/RfgTools/blob/main/src/Formats/Zones/ZoneFile.bf).
@@ -46,7 +48,7 @@ Name of the `ambient_spawn_info.xtbl` entry used by this object.
 
 Name of the `spawn_resource.xtbl` entry used by this object.
 
-Default = "Default"
+Default = `Default`
 
 
 **terrain_file_name** (*string*, Type=4):
@@ -58,14 +60,14 @@ Base name for the terrain files used by this zone. E.g. If it equals `mp_crescen
 
 Unconfirmed purpose. Might related to the ambient wind effect seen on some maps.
 
-Default = 50.0f
+Default = `50.0`
 
 
 **wind_max_speed** (*float*, Type=5, Size=4, Optional):
 
 Unconfirmed purpose. Might related to the ambient wind effect seen on some maps.
 
-Default = 80.0f
+Default = `80.0`
 
 ----------------
 
@@ -80,9 +82,12 @@ Local space bounding box.
 **bounding_box_type** (*string*, Type=4, Optional):
 Likely used to determine what logic the game should run on it.
 
-Options = {"GPS Target", "None"}
+Default = `None`
 
-Default = "None"
+Options:
+- `GPS Target`
+- `None`
+
 
 ----------------
 
@@ -94,16 +99,248 @@ Dummy object used for scripting.
 
 It's currently unknown what effect each of these types has.
 
-Options = {"None", "Tech Reponse Pos", "VRail Spawn", "Demo Master", "Cutscene", "Air Bomb", "Rally", "Barricade", "Reinforced_Fence", "Smoke Plume", "Demolition"}
+Options:
+- `None`
+- `Tech Reponse Pos`
+- `VRail Spawn`
+- `Demo Master`
+- `Cutscene`
+- `Air Bomb`
+- `Rally`
+- `Barricade`
+- `Reinforced_Fence`
+- `Smoke Plume`
+- `Demolition`
 
 ----------------
 
-
 ### **player_start** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Spawn location for the player.
+
+
+**indoor** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+
+**mp_team** (*string*, Type=4, Optional):
+
+The team the player is placed in when they spawn.
+
+Options:
+- `Guerilla`
+- `EDF`
+- `Civilian`
+- `Marauder`
+
+
+**initial_spawn** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+Default = `false`
+
+
+**respawn** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+Default = `false`
+
+
+**checkpoint_respawn** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+Default = `false`
+
+
+**activity_respawn** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+Default = `false`
+
+
+**mission_info** (*string*, Type=4, Optional):
+
+The name of an entry in `missions.xtbl`. Exact use case unknown. Likely used to indicate checkpoint spawn locations during SP missions. This property is only loaded by the game if `checkpoint_respawn` is true.
+
+----------------
 
 ### **trigger_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Used to create cliff and landmine killzones in SP and MP. Its triggers when the player enters it. Likely used in SP mission scripting as well.
+
+
+**trigger_shape** (*string*, Type=4, Optional):
+
+The shape of the trigger region.
+
+Default = `box`
+
+Options:
+- `box`
+- `sphere`
+
+
+**bb** (*bounding box*, Type=5, Size=24):
+
+Only loaded by the game when `trigger_shape` is `box`. Its a local space bounding box.
+
+
+**outer_radius** (*float*, Type=5, Size=4):
+
+Only loaded by the game when `trigger_shape` is `sphere`. Its a local space bounding box.
+
+
+**enabled** (*bool*, Type=5, Size=1):
+
+Mostly likely allows mappers to enable/disable the region. This hasn't been tested at the time of writing.
+
+
+**region_type** (*string*, Type=4, Optional):
+
+The action that should occur when the region is entered by a player.
+
+Default = `default`
+
+Options:
+- `default`
+- `kill human`
+
+
+**region_kill_type** (*string*, Type=4, Optional):
+
+How to kill those who enter the region when `region_type` is `kill human`.
+
+Default = `cliff`
+
+Options:
+- `cliff`
+- `mine`
+
+
+**trigger_flags** (*string flags*, Type=4, Optional)
+
+Purpose unknown.
+
+Options:
+- `not_in_activity`
+- `not_in_mission`
+
+----------------
 
 ### **object_mover** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Base class for movers. The capabilities of this type versus other movers is currently unknown.
+
+
+**building_type** (*string flags*, Type=4)
+
+Purpose unknown.
+
+Options:
+- `Dynamic`
+- `Force_Field`
+- `Bridge`
+- `Raid`
+- `House`
+- `Player_Base`
+- `Communications`
+
+
+**dest_checksum** (*uint*, Type=5, Size=4):
+
+Purpose unknown.
+
+
+**gameplay_props** (*string*, Type=4, Optional):
+
+The name of an entry in `gameplay_properties.xtbl`.
+
+Default = `Default`
+
+
+**flags** (*uint*, Type=5, Size=4):
+
+Bitflags stored in a 32bit integer. The value of each bit is unknown. If this property is present `chunk_flags` will be ignored. This property offers more control, however we don't currently know what any of the flags do.
+
+
+**chunk_flags** (*string flags*, Type=4, Optional)
+
+Likely used by the game to give buildings special behavior. Untested at the time of writing. It appears that you can use `gameplay_properties.xtbl` to apply these flags too.
+
+Options:
+- `child_gives_control`
+- `building`
+- `dynamic_link`
+- `world_anchor`
+- `no_cover`
+- `propaganda`
+- `kiosk`
+- `touch_terrain`
+- `supply_crate`
+- `mining`
+- `one_of_many`
+- `plume_on_death`
+- `invulnerable`
+- `inherit_damaga_pct`
+- `regrow_on_stream`
+- `casts_drop_shadow`
+- `disable_collapse_effect`
+- `force_dynamic`
+- `show_on_map`
+- `regenerate`
+- `casts_shadow`
+
+
+**dynamic_object** (*bool*, Type=5, Size=1):
+
+Purpose unknown.
+
+
+**chunk_uid** (*uint*, Type=5, Size=4):
+
+Purpose unknown.
+
+
+**props** (*string*, Type=4, Optional):
+
+The name of an entry in `level_objects.xtbl` or the equivalent xtbls for the DLC.
+
+Default = `Default`
+
+
+**chunk_name** (*string*, Type=4, Optional):
+
+The name of the asset container this object should use, with the `.rfgchunkx` extension excluded. The asset containers are defined in the asm_pc file for that map. This is only loaded by the game if `props` exists and has a valid value.
+
+
+**chunk_uid** (*uint*, Type=5, Size=4):
+
+UID of the destroyable to use in the assets mesh. cchk_pc mesh files can contain multiple variants of a building known as destroyables. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
+
+
+**chunk_uid** (*uint*, Type=5, Size=4):
+
+Purpose unknown. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
+
+
+**team** (*string*, Type=4, Optional):
+
+The team assigned to the mover. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
+
+Options:
+- `Guerilla`
+- `EDF`
+- `Civilian`
+- `Marauder`
+
+
+**control** (*float*, Type=5, Size=4):
+
+Likely how much control is reduced when the building is control. This is only loaded when the 2nd and 16th bits of `flags` are false. This property is untested. `gameplay_properties.xtbl` also has a `control` field so you should try that one first.
+
+----------------
 
 ### **general_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
 
