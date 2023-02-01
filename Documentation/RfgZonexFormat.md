@@ -343,21 +343,235 @@ Likely how much control is reduced when the building is control. This is only lo
 ----------------
 
 ### **general_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
+Another class of movers. The exact difference between this and other movers isn't known yet. Though typically simpler map objects like explosive barrels with be a `general_mover`.
+
+
+**gm_flags** (*uint*, Type=5, Size=4):
+
+Bitflags stored in 32 bit integer. Purpose and flags unknown.
+
+
+**collision_type** (*uint*, Type=5, Size=4):
+
+Most likely a collision filter used by the physics engine. The exact behavior isn't known yet. It may be based on collision layers, where each bit toggles whether an item collides with that layer or not. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is off.
+
+The game has quite a few presets. Though if it works as theorized above you could define your own by manually setting which layers it collides with. It's likely that many of these aren't useful for map editing since some appear to only be used for raycasting and object collection. Here are the known presets:
+- World = `65538`
+- Player = `6`
+- NPC = `7`
+- HumanMinimum = `63`
+- Turret = `589832`
+- Vehicle = `9`
+- Walker = `12`
+- WalkerHull = `14`
+- Flyer = `15`
+- Ragdoll = `131077`
+- Mover = `3`
+- Item = `589828`
+- OnlyForObjectCollection = `393275`
+- HumanHitDetect = `393265`
+- Projectile = `327696`
+- ProjectileAttached = `393233`
+- PersonalShield = `393234`
+- ObjectCollector = `19`
+- ObjectCollectorNoItems = `20`
+- ObjectCollectorVehiclesOnly = `21`
+- Navmesh = `23`
+- VehicleNavmesh = `24`
+- NoCollision = `393238`
+- HumanOnLadder = `50`
+- InitialPosition = `524327`
+- Normal = `40`
+- NormalFast = `393257`
+- Lite = `393258`
+- UltraLite = `393259`
+- WorldOnly = `393260`
+- RayDestroyable = `45`
+- Stress = `46`
+- RayDefault = `25`
+- RayTerrainOnly = `27`
+- RayWorldOnly = `28`
+- RayWalkingSurfaceOnly = `29`
+- Keyframed = `458788`
+- RayNavmeshOnly = `31`
+- RayRagdollOnly = `32`
+- RayVehicleNavmeshOnly = `34`
+- RayVehicleEnterExit = `35`
+- RayCity = `30`
+- RayPlayerCover = `33`
+- DeadHuman = `393253`
+- PhysicalObject = `393254`
+- PhysicalObjectSelf = `38`
+- Camera = `48`
+- HumanNotOtherHumans = `52`
+- WorldAnchor = `393270`
+- DynamicLink = `393271`
+- DeleteObject = `56`
+- RayVehicleWheel = `57`
+- EffectRigidBody = `58`
+- ClothSim = `60`
+- InvisibleBarrier = `393277`
+- ForceField = `62`
+
+
+**idx** (*uint*, Type=5, Size=4):
+
+Known internally as "subpiece index". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is on.
+
+
+**mtype** (*uint*, Type=5, Size=4):
+
+Known internally as "move type". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is on.
+
+
+**destruct_uid** (*uint*, Type=5, Size=4):
+
+Purpose unknown.
+
+
+**hitpoints** (*int*, Type=5, Size=4, Optional):
+
+Purpose unknown. Only loaded in certain conditions which currently are not known.
+
+
+**dislodge_hitpoints** (*int*, Type=5, Size=4, Optional):
+
+Purpose unknown. Only loaded in certain conditions which currently are not known.
+
+----------------
 
 ### **rfg_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
+This is the type used for most destructible structures like small walls, and bridges, and walkways.
+
+
+**mtype** (*uint*, Type=5, Size=4):
+
+Called "move type" internally. Exact use unknown.
+
+Options:
+- Fixed = `0`
+- Normal = `1`
+- Lite = `2`
+- Ultra Lite = `3`
+- World Only = `4`
+- No Collision = `5`
+
+
+**rfg_flags** (*uint*, Type=5, Size=4):
+
+Bitflags used to define a bunch of object state. The behavior of each bit is currently unknown. Some of these are clearly for runtime use. This properly most likely isn't intended for use in zone files. It probably is used to save runtime state of movers in save files. Still listing this property for completeness sake. The bit names in order are:
+- `under_stress`
+- `run_stress_on_stream`
+- `collapse_effect`
+- `invulnerable`
+- `game_destroyed`
+- `fully_destroyed`
+- `large_explosion`
+- `pristine`
+- `mp_no_fade_destroy`
+- `render_xform_dirty`
+- `is_ai_structure`
+- `is_ai_building`
+- `is_ai_subpiece`
+- `is_ai_composite`
+- `updating_anchors`
+- `plume_on_death`
+- `one_of_many`
+- `mining`
+- `supply_crate`
+- `regrow_on_stream_begin`
+- `regrow_on_stream_finish`
+- `inherit_damage_pct`
+- `rebuild`
+- `propaganda`
+- `building`
+
+
+**damage_percent** (*float*, Type=5, Size=4, Optional):
+
+Purpose unknown.
+
+
+**salvage_num_pieces** (*int*, Type=5, Size=4, Optional):
+
+Most likely the number of salvage pieces it drops when destroyed. Untested. It's most likely easier to use the variable with the same name in `gameplay_properties.xtbl`
+
+
+**game_destroyed_pct** (*int*, Type=5, Size=4, Optional):
+
+Purpose unknown. It's most likely easier to use the variable with the same name in `gameplay_properties.xtbl`
+
+
+**stream_out_play_time** (*int*, Type=5, Size=4, Optional):
+
+Purpose unknown.
+
+
+**world_anchors** (*buffer*, Type=5, Size=Variable, Optional):
+
+A variable sized binary buffer. Exact contents unknown. Likely physics engine related data. Removing this from rfg movers causes them to be very unstable and sometimes fall through the terrain or explode into chunks.
+
+
+**dynamic_links** (*buffer*, Type=5, Size=Variable, Optional):
+
+A variable sized binary buffer. Purpose unknown.
+
+----------------
 
 ### **shape_cutter** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Used to damage or cut holes into destructible objects ahead of time.
+
+
+**flags** (*int16*, Type=5, Size=2):
+
+Bitflags stored in a 16 bit integer. Flags unknown.
+
+
+**outer_radius** (*float*, Type=5, Size=4, Optional):
+
+Purpose unknown.
+
+
+**source** (*uint*, Type=5, Size=4, Optional):
+
+Believed to be an object handle. 
+
+
+**owner** (*uint*, Type=5, Size=4, Optional):
+
+Believed to be an object handle.
+
+
+**exp_info** (*u8*, Type=5, Size=1, Optional):
+
+Unique ID of an explosion stored in an 8 bit integer.
+
+----------------
 
 ### **object_effect** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Plays an effect such as smoke, fire, explosion, sparks, etc.
+
+----------------
 
 ### **item** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Base class for pickup objects like weapons and MP flags.
+
+----------------
 
 ### **weapon** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+A weapon that the player can pick up by running into.
+
+----------------
 
 ### **ladder** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+A ladder. Players and NPCs can climb it.
+
+----------------
 
 ### **obj_light** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Lights up the environment. There's only one in the SP map and it hasn't been tested much in MP, so the limits of these lights aren't well known.
 
+----------------
 
 ## MP only objects
 These types are only used in multiplayer maps.
