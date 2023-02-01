@@ -551,25 +551,123 @@ Unique ID of an explosion stored in an 8 bit integer.
 ### **object_effect** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Plays an effect such as smoke, fire, explosion, sparks, etc.
 
+
+**effect_type** (*string[67]*, Type=4, Optional):
+
+The name of an entry in `effects.xtbl`.
+
+
+**Note:** This class has several other properties that aren't documented for the moment. They essentially do the same thing as `effect_type` but using runtime data. They aren't documented for now since they appear to be for runtime use only and `effect_type` overrides them.
+
 ----------------
 
 ### **item** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Base class for pickup objects like weapons and MP flags.
+
+
+**item_type** (*string[255]*, Type=4, Optional):
+
+The name of an entry in `items_3d.xtbl`.
+
+
+**Note:** This class has several other properties that aren't documented for the moment. They essentially do the same thing as `item_type` but using runtime data. They aren't documented for now since they appear to be for runtime use only and `item_type` overrides them.
 
 ----------------
 
 ### **weapon** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
 A weapon that the player can pick up by running into.
 
+
+**item_type** (*string[255]*, Type=4, Optional):
+
+For weapons this is the name of an entry in `weapons.xtbl`.
+
+
+**Note:** This class has some runtime properties that were excluded. Just like `item` and `object_effect` do.
+
 ----------------
 
 ### **ladder** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 A ladder. Players and NPCs can climb it.
 
+
+**ladder_rungs** (*int*, Type=5, Size=4):
+
+Likely the number of rungs on the ladder. Untested.
+
+
+**ladder_enabled** (*bool*, Type=5, Size=1):
+
+Likely toggles whether players and NPCs can climb it. Untested.
+
 ----------------
 
 ### **obj_light** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
 Lights up the environment. There's only one in the SP map and it hasn't been tested much in MP, so the limits of these lights aren't well known.
+
+
+**atten_start** (*float*, Type=5, Size=4, Optional):
+
+Effects light intensity falloff. Untested.
+
+
+**atten_end** (*float*, Type=5, Size=4, Optional):
+
+Effects light intensity falloff. Untested.
+
+
+**atten_range** (*float*, Type=5, Size=4, Optional):
+
+Effects light intensity falloff. Untested. Only loaded if `atten_end` isn't present. Setting this effectively sets `atten_end` to `atten_start + atten_range`.
+
+
+**light_flags** (*string*, Type=4, Optional):
+
+Behavior unknown.
+
+Options:
+- `use_clipping`
+- `daytime`
+- `nighttime`
+
+
+**type_enum** (*string*, Type=4, Optional):
+
+The shape/direction of the light.
+
+Options:
+- `spot`
+- `omni`
+
+
+**clr_orig** (*vec3*, Type=5, Size=12):
+
+Most likely the lights RGB color. Untested.
+
+
+**hotspot_size** (*float*, Type=5, Size=4, Optional):
+
+Behavior unknown.
+
+
+**hotspot_falloff_size** (*float*, Type=5, Size=4, Optional):
+
+Behavior unknown.
+
+
+**min_clip** (*vec3*, Type=5, Size=12):
+
+Behavior unknown. Possibly uses to limit the area the object lights along with `max_clip`. Untested.
+
+
+**max_clip** (*vec3*, Type=5, Size=12):
+
+Behavior unknown. Only loaded if `min_clip` is present.
+
+
+**clip_mesh** (*int*, Type=5, Size=4):
+
+Appears to be the hash of a mesh files name. Untested.
 
 ----------------
 
@@ -577,11 +675,19 @@ Lights up the environment. There's only one in the SP map and it hasn't been tes
 These types are only used in multiplayer maps.
 
 ### **multi_object_marker** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Used to mark objects for several MP game modes. For example: siege targets, flag capture zones, or king of the hill targets.
+
+----------------
 
 ### **multi_object_flag** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+Spawn point of capture the flag targets.
+
+----------------
 
 ### **multi_object_backpack** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+MP backpack spawn point.
 
+----------------
 
 ## SP only objects
 These types are only used in single player zones. One exception is `navpoint` and `cover_node` objects found in the Nordic Special map. This is thought to be a mistake or some objects left behind from the remaster developers learning the mapping tools. The section is incomplete since the Nanoforge rewrite doesn't support opening and editing single player maps yet. It'll be updated when SP support is added.
