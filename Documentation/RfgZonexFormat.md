@@ -507,12 +507,12 @@ Purpose unknown. It's most likely easier to use the variable with the same name 
 Purpose unknown.
 
 
-**world_anchors** (*buffer*, Type=5, Size=Variable, Optional):
+**world_anchors** (*buffer*, Type=6, Size=Variable, Optional):
 
 A variable sized binary buffer. Exact contents unknown. Likely physics engine related data. Removing this from rfg movers causes them to be very unstable and sometimes fall through the terrain or explode into chunks.
 
 
-**dynamic_links** (*buffer*, Type=5, Size=Variable, Optional):
+**dynamic_links** (*buffer*, Type=6, Size=Variable, Optional):
 
 A variable sized binary buffer. Purpose unknown.
 
