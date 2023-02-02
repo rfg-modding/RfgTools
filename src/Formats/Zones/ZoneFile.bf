@@ -4,6 +4,7 @@ using RfgTools.Hashing;
 using Common.Math;
 using Common;
 using System;
+using RfgTools.Types;
 
 //Use to read data from RFG rfgzone_pc and layer_pc files
 public class ZoneFile36
@@ -181,6 +182,76 @@ public struct RfgZoneObject
         return firstProp;
     }
 
+    private Result<T> GetPropertyInternal<T>(StringView name, u16 type) mut
+    {
+        readonly u32 nameHash = Hash.HashVolition(name);
+        for (Property* prop in Properties)
+            if (prop.NameHash == nameHash && prop.Type == type && prop.Size == sizeof(T))
+                return *(T*)prop.Data;
+
+        return .Err;
+    }
+
+    public Result<f32> GetF32(StringView name) mut
+    {
+        return GetPropertyInternal<f32>(name, 4);
+    }
+
+    public Result<i32> GetI32(StringView name) mut
+    {
+        return GetPropertyInternal<i32>(name, 4);
+    }
+
+    public Result<u32> GetU32(StringView name) mut
+    {
+        return GetPropertyInternal<u32>(name, 4);
+    }
+
+    public Result<u16> GetU16(StringView name) mut
+    {
+        return GetPropertyInternal<u16>(name, 4);
+    }
+
+    public Result<bool> GetBool(StringView name) mut
+    {
+        return GetPropertyInternal<bool>(name, 4);
+    }
+
+    public Result<Vec3<f32>> GetVec3(StringView name) mut
+    {
+        return GetPropertyInternal<Vec3<f32>>(name, 4);
+    }
+
+    public Result<Mat3> GetMat3(StringView name) mut
+    {
+        return GetPropertyInternal<Mat3>(name, 4);
+    }
+
+    public Result<PositionOrient> GetPositionOrient(StringView name) mut
+    {
+        return GetPropertyInternal<PositionOrient>(name, 4);
+    }
+
+    public Result<Span<u8>> GetBuffer(StringView name) mut
+	{
+        readonly u32 nameHash = Hash.HashVolition(name);
+        for (Property* prop in Properties)
+            if (prop.NameHash == nameHash && prop.Type == 6)
+                return Span<u8>((u8*)prop.Data, prop.Size);
+
+        return .Err;
+	}
+
+    public Result<StringView> GetString(StringView name) mut
+    {
+        readonly u32 nameHash = Hash.HashVolition(name);
+        for (Property* prop in Properties)
+            if (prop.NameHash == nameHash && prop.Type == 5)
+                return StringView((char8*)prop.Data, prop.Size);
+
+        return .Err;
+    }
+
     [CRepr]
     public struct Property
     {
@@ -189,6 +260,7 @@ public struct RfgZoneObject
         public u32 NameHash;
 
         public StringView Name => HashDictionary.FindOriginString(NameHash).GetValueOrDefault("UnknownProperty");
+        public u8* Data mut => ((u8*)&this) + sizeof(Property); //Data immediately follows property header
     }
 
     public struct PropertyEnumerator : IEnumerator<Property*>
