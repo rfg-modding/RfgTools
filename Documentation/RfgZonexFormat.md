@@ -13,7 +13,6 @@ This section lists all zone object types and the properties they support. Zone o
 ## General objects
 These types are used in all game modes.
 
-----------------
 
 ### **object**
 The base type inherited by all other objects.
@@ -35,7 +34,7 @@ It's unknown if this has any use in the release version of the game. This might 
 
 ----------------
 
-### **obj_zone** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **obj_zone** (*inherits [object](#object)*)
 Each zone has one of these objects. They sit at the center of the zone and define the terrain file to use for that zone.
 
 
@@ -71,7 +70,7 @@ Default = `80.0`
 
 ----------------
 
-### **object_bounding_box** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_bounding_box** (*inherits [object](#object)*)
 General bounding box used by the game for mission scripting.
 
 
@@ -91,7 +90,7 @@ Options:
 
 ----------------
 
-### **object_dummy** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_dummy** (*inherits [object](#object)*)
 Dummy object used for scripting.
 
 
@@ -114,7 +113,7 @@ Options:
 
 ----------------
 
-### **player_start** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **player_start** (*inherits [object](#object)*)
 Spawn location for the player.
 
 
@@ -127,7 +126,11 @@ Purpose unknown.
 
 The team the player is placed in when they spawn.
 
+Default: `None`
+
 Options:
+- `None`
+- `Neutral`
 - `Guerilla`
 - `EDF`
 - `Civilian`
@@ -168,7 +171,7 @@ The name of an entry in `missions.xtbl`. Exact use case unknown. Likely used to 
 
 ----------------
 
-### **trigger_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **trigger_region** (*inherits [object](#object)*)
 Used to create cliff and landmine killzones in SP and MP. Its triggers when the player enters it. Likely used in SP mission scripting as well.
 
 
@@ -230,7 +233,7 @@ Options:
 
 ----------------
 
-### **object_mover** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_mover** (*inherits [object](#object)*)
 Base class for movers. The capabilities of this type versus other movers is currently unknown.
 
 
@@ -329,7 +332,11 @@ Purpose unknown. This is only loaded if `props` and `chunk_name` are valid and t
 
 The team assigned to the mover. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
 
+Default: `None`
+
 Options:
+- `None`
+- `Neutral`
 - `Guerilla`
 - `EDF`
 - `Civilian`
@@ -342,7 +349,7 @@ Likely how much control is reduced when the building is control. This is only lo
 
 ----------------
 
-### **general_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
+### **general_mover** (*inherits [object_mover](#object_mover-inherits-object)*)
 Another class of movers. The exact difference between this and other movers isn't known yet. Though typically simpler map objects like explosive barrels with be a `general_mover`.
 
 
@@ -353,7 +360,7 @@ Bitflags stored in 32 bit integer. Purpose and flags unknown.
 
 **collision_type** (*uint*, Type=5, Size=4):
 
-Most likely a collision filter used by the physics engine. The exact behavior isn't known yet. It may be based on collision layers, where each bit toggles whether an item collides with that layer or not. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is off.
+Most likely a collision filter used by the physics engine. The exact behavior isn't known yet. It may be based on collision layers, where each bit toggles whether an item collides with that layer or not. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is off.
 
 The game has quite a few presets. Though if it works as theorized above you could define your own by manually setting which layers it collides with. It's likely that many of these aren't useful for map editing since some appear to only be used for raycasting and object collection. Here are the known presets:
 - World = `65538`
@@ -416,12 +423,12 @@ The game has quite a few presets. Though if it works as theorized above you coul
 
 **idx** (*uint*, Type=5, Size=4):
 
-Known internally as "subpiece index". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is on.
+Known internally as "subpiece index". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is on.
 
 
 **mtype** (*uint*, Type=5, Size=4):
 
-Known internally as "move type". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)) is on.
+Known internally as "move type". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is on.
 
 
 **destruct_uid** (*uint*, Type=5, Size=4):
@@ -440,7 +447,7 @@ Purpose unknown. Only loaded in certain conditions which currently are not known
 
 ----------------
 
-### **rfg_mover** (*inherits [object_mover](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object_mover-inherits-object)*)
+### **rfg_mover** (*inherits [object_mover](#object_mover-inherits-object)*)
 This is the type used for most destructible structures like small walls, and bridges, and walkways.
 
 
@@ -518,7 +525,7 @@ A variable sized binary buffer. Purpose unknown.
 
 ----------------
 
-### **shape_cutter** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **shape_cutter** (*inherits [object](#object)*)
 Used to damage or cut holes into destructible objects ahead of time.
 
 
@@ -548,7 +555,7 @@ Unique ID of an explosion stored in an 8 bit integer.
 
 ----------------
 
-### **object_effect** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_effect** (*inherits [object](#object)*)
 Plays an effect such as smoke, fire, explosion, sparks, etc.
 
 
@@ -561,7 +568,7 @@ The name of an entry in `effects.xtbl`.
 
 ----------------
 
-### **item** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **item** (*inherits [object](#object)*)
 Base class for pickup objects like weapons and MP flags.
 
 
@@ -574,7 +581,7 @@ The name of an entry in `items_3d.xtbl`.
 
 ----------------
 
-### **weapon** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+### **weapon** (*inherits [item](#item-inherits-object)*)
 A weapon that the player can pick up by running into.
 
 
@@ -587,7 +594,7 @@ For weapons this is the name of an entry in `weapons.xtbl`.
 
 ----------------
 
-### **ladder** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **ladder** (*inherits [object](#object)*)
 A ladder. Players and NPCs can climb it.
 
 
@@ -602,7 +609,7 @@ Likely toggles whether players and NPCs can climb it. Untested.
 
 ----------------
 
-### **obj_light** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **obj_light** (*inherits [object](#object)*)
 Lights up the environment. There's only one in the SP map and it hasn't been tested much in MP, so the limits of these lights aren't well known.
 
 
@@ -674,112 +681,226 @@ Appears to be the hash of a mesh files name. Untested.
 ## MP only objects
 These types are only used in multiplayer maps.
 
-### **multi_object_marker** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **multi_object_marker** (*inherits [object](#object)*)
 Used to mark objects for several MP game modes. For example: siege targets, flag capture zones, or king of the hill targets.
 
+
+**bb** (*bbox*, Type=5, Size=24):
+
+Local space bounding box. 
+
+
+**marker_type** (*string(31)*, Type=4):
+
+The type of marker this is. E.g. spawn node, siege target, etc.
+
+Default: `None`
+
+Options:
+- `None`
+- `Siege target`
+- `Backpack rack`
+- `Spawn node`
+- `Flag capture zone`
+- `King of the Hill target`
+- `Spectator camera`
+
+
+**mp_team** (*string(31)*, Type=4, Optional):
+
+Team the object is owned by. Not loaded if `marker_type` is `None`.
+
+Default: `None`
+
+Options:
+- `None`
+- `Neutral`
+- `Guerilla`
+- `EDF`
+- `Civilian`
+- `Marauder`
+
+
+**priority** (*int*, Type=5, Size=4):
+
+Purpose unknown.
+
+
+**backpack_type** (*string(31)*, Type=4, Optional):
+
+Type of backpack to provide the players. Only loaded if `marker_type` is `Backpack rack`.
+
+Default: `Jetpack`
+
+Options:
+- `Commando`
+- `Fleetfoot`
+- `Heal`
+- `Jetpack`
+- `Kaboom`
+- `Rhino`
+- `Shockwave`
+- `Stealth`
+- `Thrust`
+- `Tremor`
+- `Vision`
+
+
+**num_backpacks** (*int*, Type=5, Size=4, Max=3):
+
+The number of backpacks the rack can provide to players.
+
+
+**random_backpacks** (*bool*, Type=5, Size=1):
+
+Untested.
+
+
+**group** (*int*, Type=5, Size=4):
+
+Untested.
+
 ----------------
 
-### **multi_object_flag** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+### **multi_object_flag** (*inherits [item](#item-inherits-object)*)
 Spawn point of capture the flag targets.
 
-----------------
 
-### **multi_object_backpack** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
-MP backpack spawn point.
+**mp_team** (*string(31)*, Type=4, Optional):
+
+Team the object is owned by.
+
+Default: `None`
+
+Options:
+- `None`
+- `Neutral`
+- `Guerilla`
+- `EDF`
+- `Civilian`
+- `Marauder`
 
 ----------------
 
 ## SP only objects
 These types are only used in single player zones. One exception is `navpoint` and `cover_node` objects found in the Nordic Special map. This is thought to be a mistake or some objects left behind from the remaster developers learning the mapping tools. The section is incomplete since the Nanoforge rewrite doesn't support opening and editing single player maps yet. It'll be updated when SP support is added.
 
-### **navpoint** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+
+### **navpoint** (*inherits [object](#object)*)
 Thought to be used by AI for navigation.
 
-### **cover_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **cover_node** (*inherits [object](#object)*)
 Thought to be used for the players cover system.
 
-### **constraint** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **constraint** (*inherits [object](#object)*)
 
-### **object_squad** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_squad** (*inherits [object](#object)*)
 
-### **object_turret_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_turret_spawn_node** (*inherits [object](#object)*)
 
-### **object_air_strike_defense_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_air_strike_defense_node** (*inherits [object](#object)*)
 Start location for a cancelled or incomplete activity.
 
-### **object_spawn_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_spawn_region** (*inherits [object](#object)*)
 
-### **object_demolitions_master_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_demolitions_master_node** (*inherits [object](#object)*)
 
-### **object_convoy** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_convoy** (*inherits [object](#object)*)
 
-### **object_convoy_end_point** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_convoy_end_point** (*inherits [object](#object)*)
 
-### **object_courier_end_point** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_courier_end_point** (*inherits [object](#object)*)
 
-### **object_vehicle_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_vehicle_spawn_node** (*inherits [object](#object)*)
 
-### **object_riding_shotgun_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_riding_shotgun_node** (*inherits [object](#object)*)
 
-### **object_area_defense_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_area_defense_node** (*inherits [object](#object)*)
 
-### **object_action_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_action_node** (*inherits [object](#object)*)
 
-### **object_raid_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_raid_node** (*inherits [object](#object)*)
 
-### **object_guard_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_guard_node** (*inherits [object](#object)*)
 
-### **object_house_arrest_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_house_arrest_node** (*inherits [object](#object)*)
 
-### **object_safehouse** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_safehouse** (*inherits [object](#object)*)
 
-### **object_activity_spawn** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_activity_spawn** (*inherits [object](#object)*)
 
-### **object_squad_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_squad_spawn_node** (*inherits [object](#object)*)
 
-### **object_upgrade_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_upgrade_node** (*inherits [object](#object)*)
 
-### **object_path_road** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_path_road** (*inherits [object](#object)*)
 
-### **object_bftp_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_bftp_node** (*inherits [object](#object)*)
 
-### **object_mission_start_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_mission_start_node** (*inherits [object](#object)*)
 
-### **marauder_ambush_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **marauder_ambush_region** (*inherits [object](#object)*)
 
-### **object_roadblock_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_roadblock_node** (*inherits [object](#object)*)
 
-### **object_restricted_area** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_restricted_area** (*inherits [object](#object)*)
 
-### **object_delivery_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_delivery_node** (*inherits [object](#object)*)
 
-### **object_ambient_behavior_region** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_ambient_behavior_region** (*inherits [object](#object)*)
 
-### **object_npc_spawn_node** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_npc_spawn_node** (*inherits [object](#object)*)
 
-### **object_patrol** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **object_patrol** (*inherits [object](#object)*)
+
+----------------
 
 ## Runtime objects
 These types aren't found in vanilla zone files. They're only created by the game at runtime. No one has tested adding one of these to a map at the time of writing since Nanoforge doesn't support them yet. The section is incomplete for the same reason.
 
-### **vehicle** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **multi_object_backpack** (*inherits [item](#item-inherits-object)*)
+MP backpack object. Spawned by a `multi_object_marker` object with `marker_type` equal to `Backpack rack`.
 
-### **automobile** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
 
-### **walker** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
+**backpack_type** (*string(31)*, Type=4, Optional):
 
-### **flyer** (*inherits [vehicle](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#vehicle-inherits-object)*)
+Type of backpack to provide the players.
 
-### **human** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+Default: `Jetpack`
 
-### **npc** (*inherits [human](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#human-inherits-object)*)
+Options:
+- `Commando`
+- `Fleetfoot`
+- `Heal`
+- `Jetpack`
+- `Kaboom`
+- `Rhino`
+- `Shockwave`
+- `Stealth`
+- `Thrust`
+- `Tremor`
+- `Vision`
 
-### **player** (*inherits [human](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#human-inherits-object)*)
+----------------
 
-### **turret** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **projectile** (*inherits [item](#item-inherits-object)*)
 
-### **object_debris** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **vehicle** (*inherits [object](#object)*)
 
-### **district** (*inherits [object](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#object)*)
+### **automobile** (*inherits [vehicle](#vehicle-inherits-object)*)
 
-### **projectile** (*inherits [item](https://github.com/Moneyl/RfgTools/blob/main/Documentation/RfgZonexFormat.md#item-inherits-object)*)
+### **walker** (*inherits [vehicle](#vehicle-inherits-object)*)
+
+### **flyer** (*inherits [vehicle](#vehicle-inherits-object)*)
+
+### **human** (*inherits [object](#object)*)
+
+### **npc** (*inherits [human](#human-inherits-object)*)
+
+### **player** (*inherits [human](#human-inherits-object)*)
+
+### **turret** (*inherits [object](#object)*)
+
+### **object_debris** (*inherits [object](#object)*)
+
+### **district** (*inherits [object](#object)*)
