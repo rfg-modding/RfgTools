@@ -75,10 +75,12 @@ General bounding box used by the game for mission scripting.
 
 
 **bb** (*bbox*, Type=5, Size=24):
+
 Local space bounding box. 
 
 
 **bounding_box_type** (*string*, Type=4, Optional):
+
 Likely used to determine what logic the game should run on it.
 
 Default = `None`
