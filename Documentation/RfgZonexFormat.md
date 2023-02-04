@@ -320,12 +320,12 @@ Default = `Default`
 The name of the asset container this object should use, with the `.rfgchunkx` extension excluded. The asset containers are defined in the asm_pc file for that map. This is only loaded by the game if `props` exists and has a valid value.
 
 
-**chunk_uid** (*uint*, Type=5, Size=4):
+**uid** (*uint*, Type=5, Size=4):
 
 UID of the destroyable to use in the assets mesh. cchk_pc mesh files can contain multiple variants of a building known as destroyables. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
 
 
-**chunk_uid** (*uint*, Type=5, Size=4):
+**shape_uid** (*uint*, Type=5, Size=4):
 
 Purpose unknown. This is only loaded if `props` and `chunk_name` are valid and the streaming system manages to find the asset specified by `chunk_name`.
 
