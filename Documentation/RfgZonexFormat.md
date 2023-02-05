@@ -79,7 +79,7 @@ General bounding box used by the game for mission scripting.
 Local space bounding box. 
 
 
-**bounding_box_type** (*string*, Type=4, Optional):
+**bounding_box_type** (*enum(string)*, Type=4, Optional):
 
 Likely used to determine what logic the game should run on it.
 
@@ -96,7 +96,7 @@ Options:
 Dummy object used for scripting.
 
 
-**dummy_type** (*string*, Type=4):
+**dummy_type** (*enum(string)*, Type=4):
 
 It's currently unknown what effect each of these types has.
 
@@ -124,7 +124,7 @@ Spawn location for the player.
 Purpose unknown.
 
 
-**mp_team** (*string*, Type=4, Optional):
+**mp_team** (*enum(string)*, Type=4, Optional):
 
 The team the player is placed in when they spawn.
 
@@ -177,7 +177,7 @@ The name of an entry in `missions.xtbl`. Exact use case unknown. Likely used to 
 Used to create cliff and landmine killzones in SP and MP. Its triggers when the player enters it. Likely used in SP mission scripting as well.
 
 
-**trigger_shape** (*string*, Type=4, Optional):
+**trigger_shape** (*enum(string)*, Type=4, Optional):
 
 The shape of the trigger region.
 
@@ -203,7 +203,7 @@ Only loaded by the game when `trigger_shape` is `sphere`. Its a local space boun
 Mostly likely allows mappers to enable/disable the region. This hasn't been tested at the time of writing.
 
 
-**region_type** (*string*, Type=4, Optional):
+**region_type** (*enum(string)*, Type=4, Optional):
 
 The action that should occur when the region is entered by a player.
 
@@ -214,7 +214,7 @@ Options:
 - `kill human`
 
 
-**region_kill_type** (*string*, Type=4, Optional):
+**region_kill_type** (*enum(string)*, Type=4, Optional):
 
 How to kill those who enter the region when `region_type` is `kill human`.
 
@@ -225,7 +225,7 @@ Options:
 - `mine`
 
 
-**trigger_flags** (*string flags*, Type=4, Optional)
+**trigger_flags** (*flags(string)*, Type=4, Optional)
 
 Purpose unknown.
 
@@ -239,7 +239,7 @@ Options:
 Base class for movers. The capabilities of this type versus other movers is currently unknown.
 
 
-**building_type** (*string flags*, Type=4)
+**building_type** (*flags(string)*, Type=4)
 
 Purpose unknown.
 
@@ -270,7 +270,7 @@ Default = `Default`
 Bitflags stored in a 32bit integer. The value of each bit is unknown. If this property is present `chunk_flags` will be ignored. This property offers more control, however we don't currently know what any of the flags do.
 
 
-**chunk_flags** (*string flags*, Type=4, Optional)
+**chunk_flags** (*flags(string)*, Type=4, Optional)
 
 Likely used by the game to give buildings special behavior. Untested at the time of writing. It appears that you can use `gameplay_properties.xtbl` to apply these flags too.
 
@@ -360,7 +360,12 @@ Another class of movers. The exact difference between this and other movers isn'
 Bitflags stored in 32 bit integer. Purpose and flags unknown.
 
 
-**collision_type** (*uint*, Type=5, Size=4):
+**original_object** (*uint*, Type=5, Size=4):
+
+Purpose unknown.
+
+
+**ctype** (*uint*, Type=5, Size=4):
 
 Most likely a collision filter used by the physics engine. The exact behavior isn't known yet. It may be based on collision layers, where each bit toggles whether an item collides with that layer or not. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is off.
 
@@ -630,7 +635,7 @@ Effects light intensity falloff. Untested.
 Effects light intensity falloff. Untested. Only loaded if `atten_end` isn't present. Setting this effectively sets `atten_end` to `atten_start + atten_range`.
 
 
-**light_flags** (*string*, Type=4, Optional):
+**light_flags** (*flags(string)*, Type=4, Optional):
 
 Behavior unknown.
 
@@ -640,7 +645,7 @@ Options:
 - `nighttime`
 
 
-**type_enum** (*string*, Type=4, Optional):
+**type_enum** (*enum(string)*, Type=4, Optional):
 
 The shape/direction of the light.
 
@@ -692,7 +697,7 @@ Used to mark objects for several MP game modes. For example: siege targets, flag
 Local space bounding box. 
 
 
-**marker_type** (*string(31)*, Type=4):
+**marker_type** (*enum(string)*, Type=4):
 
 The type of marker this is. E.g. spawn node, siege target, etc.
 
@@ -708,7 +713,7 @@ Options:
 - `Spectator camera`
 
 
-**mp_team** (*string(31)*, Type=4, Optional):
+**mp_team** (*enum(string)*, Type=4):
 
 Team the object is owned by. Not loaded if `marker_type` is `None`.
 
@@ -728,7 +733,7 @@ Options:
 Purpose unknown.
 
 
-**backpack_type** (*string(31)*, Type=4, Optional):
+**backpack_type** (*enum(string)*, Type=4):
 
 Type of backpack to provide the players. Only loaded if `marker_type` is `Backpack rack`.
 
@@ -768,7 +773,7 @@ Untested.
 Spawn point of capture the flag targets.
 
 
-**mp_team** (*string(31)*, Type=4, Optional):
+**mp_team** (*enum(string)*, Type=4):
 
 Team the object is owned by.
 
@@ -864,7 +869,7 @@ These types aren't found in vanilla zone files. They're only created by the game
 MP backpack object. Spawned by a `multi_object_marker` object with `marker_type` equal to `Backpack rack`.
 
 
-**backpack_type** (*string(31)*, Type=4, Optional):
+**backpack_type** (*enum(string)*, Type=4, Optional):
 
 Type of backpack to provide the players.
 
