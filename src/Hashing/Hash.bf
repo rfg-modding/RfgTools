@@ -43,11 +43,11 @@ namespace RfgTools.Hashing
 
         public static u32 HashVolitionCRC(StringView input, u32 hash)
         {
-            String strLower = input.ToLower(.. scope .());
             u32 result = hash;
-            for (int i = 0; i < strLower.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                result = _volitionCrcTable[(u8)result ^ (u8)strLower[i]] ^ (result >> 8);
+                char8 c = input[i].ToLower;
+                result = _volitionCrcTable[(u8)result ^ (u8)c] ^ (result >> 8);
             }
 
             return result;
@@ -62,7 +62,7 @@ namespace RfgTools.Hashing
             {
                 pos++;
                 if ((u8)(c + 191U) < 26)
-                    c += 32;
+                    c += 32; //Lowercase character to upper
 
                 temp = temp >> 8 ^ _volitionCrcTable[((int)c ^ temp) & 255];
                 c = *pos;
@@ -73,13 +73,12 @@ namespace RfgTools.Hashing
 
         public static u32 HashVolition(StringView input)
         {
-            String inputLower = input.ToLower(.. scope .());
-
             u32 hash = 0;
-            for (int i = 0; i < inputLower.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
+                char8 c = input[i].ToLower;
                 hash = (hash << 6) | (hash >> 26);
-                hash = (u8)(inputLower[i]) ^ hash;
+                hash = (u8)(c) ^ hash;
             }
 
             return hash;
