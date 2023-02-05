@@ -184,70 +184,108 @@ public struct RfgZoneObject
 
     private Result<T> GetPropertyInternal<T>(StringView name, u16 type) mut
     {
-        readonly u32 nameHash = Hash.HashVolition(name);
+        readonly u32 nameHash = Hash.HashVolitionCRC(name, 0);
         for (Property* prop in Properties)
-            if (prop.NameHash == nameHash && prop.Type == type && prop.Size == sizeof(T))
+        {
+            if (prop.NameHash == nameHash)
+            {
+                if (prop.Type != type)
+                    return .Err;
+                if (prop.Size != sizeof(T))
+                    return .Err;
+
                 return *(T*)prop.Data;
+            }
+        }
 
         return .Err;
     }
 
     public Result<f32> GetF32(StringView name) mut
     {
-        return GetPropertyInternal<f32>(name, 4);
+        return GetPropertyInternal<f32>(name, 5);
     }
 
     public Result<i32> GetI32(StringView name) mut
     {
-        return GetPropertyInternal<i32>(name, 4);
+        return GetPropertyInternal<i32>(name, 5);
     }
 
     public Result<u32> GetU32(StringView name) mut
     {
-        return GetPropertyInternal<u32>(name, 4);
+        return GetPropertyInternal<u32>(name, 5);
+    }
+
+    public Result<i16> GetI16(StringView name) mut
+    {
+        return GetPropertyInternal<i16>(name, 5);
+    }
+
+    public Result<u8> GetU8(StringView name) mut
+    {
+        return GetPropertyInternal<u8>(name, 5);
     }
 
     public Result<u16> GetU16(StringView name) mut
     {
-        return GetPropertyInternal<u16>(name, 4);
+        return GetPropertyInternal<u16>(name, 5);
     }
 
     public Result<bool> GetBool(StringView name) mut
     {
-        return GetPropertyInternal<bool>(name, 4);
+        return GetPropertyInternal<bool>(name, 5);
     }
 
     public Result<Vec3<f32>> GetVec3(StringView name) mut
     {
-        return GetPropertyInternal<Vec3<f32>>(name, 4);
+        return GetPropertyInternal<Vec3<f32>>(name, 5);
     }
 
     public Result<Mat3> GetMat3(StringView name) mut
     {
-        return GetPropertyInternal<Mat3>(name, 4);
+        return GetPropertyInternal<Mat3>(name, 5);
     }
 
     public Result<PositionOrient> GetPositionOrient(StringView name) mut
     {
-        return GetPropertyInternal<PositionOrient>(name, 4);
+        return GetPropertyInternal<PositionOrient>(name, 5);
+    }
+
+    public Result<BoundingBox> GetBBox(StringView name) mut
+    {
+        return GetPropertyInternal<BoundingBox>(name, 5);
     }
 
     public Result<Span<u8>> GetBuffer(StringView name) mut
 	{
-        readonly u32 nameHash = Hash.HashVolition(name);
+        readonly u32 nameHash = Hash.HashVolitionCRC(name, 0);
         for (Property* prop in Properties)
-            if (prop.NameHash == nameHash && prop.Type == 6)
+        {
+            if (prop.NameHash == nameHash)
+            {
+                if (prop.Type != 6)
+                    return .Err;
+
                 return Span<u8>((u8*)prop.Data, prop.Size);
+            }
+        }
 
         return .Err;
 	}
 
     public Result<StringView> GetString(StringView name) mut
     {
-        readonly u32 nameHash = Hash.HashVolition(name);
+        readonly u32 nameHash = Hash.HashVolitionCRC(name, 0);
         for (Property* prop in Properties)
-            if (prop.NameHash == nameHash && prop.Type == 5)
+        {
+            if (prop.NameHash == nameHash)
+            {
+                if (prop.Type != 4)
+                    return .Err;
+
                 return StringView((char8*)prop.Data, prop.Size);
+            }
+        }
 
         return .Err;
     }

@@ -592,9 +592,9 @@ The name of an entry in `items_3d.xtbl`.
 A weapon that the player can pick up by running into.
 
 
-**item_type** (*string[255]*, Type=4, Optional):
+**weapon_type** (*string[255]*, Type=4, Optional):
 
-For weapons this is the name of an entry in `weapons.xtbl`.
+The name of an entry in `weapons.xtbl`. Only loaded if `item_type` isn't present.
 
 
 **Note:** This class has some runtime properties that were excluded. Just like `item` and `object_effect` do.
