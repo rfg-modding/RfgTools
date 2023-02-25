@@ -302,6 +302,15 @@ namespace RfgTools.Formats
             }
         }
 
+        public bool Contains(StringView subfileName)
+        {
+            for (StringView entryName in EntryNames)
+                if (entryName.Equals(subfileName, true))
+                    return true;
+
+            return false;
+        }
+
         //Fix data offsets. Values in packfile not always valid.
         //Ignores packfiles that are compressed AND condensed since those must
         //be fully extracted and data offsets aren't relevant in that case.
