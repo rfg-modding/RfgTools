@@ -62,8 +62,8 @@ namespace RfgTools.Formats
         }
 
         public String Name = null ~ if (Name != null) delete _;
-        public bool Compressed = Header.Compressed;
-        public bool Condensed = Header.Condensed;
+        public bool Compressed => Header.Compressed;
+        public bool Condensed => Header.Condensed;
 
         public Header Header;
         public Entry[] Entries = null ~ if (_ != null) delete _;
@@ -76,10 +76,10 @@ namespace RfgTools.Formats
         private bool _readMetadata = false;
 
         //Create packfile from stream
-        public this(Stream input, String name)
+        public this(Stream input, StringView name)
         {
             _input = input;
-            Name = name;
+            Name = new .()..Append(name);
         }
 
         //Create packfile from file
@@ -270,7 +270,9 @@ namespace RfgTools.Formats
                 _input.TryRead(inputBuffer);
                 Zlib.Inflate(inputBuffer, outputBuffer);
 
-                return outputBuffer;
+                u8[] result = new u8[entry.DataSize];
+                Internal.MemCpy(result.Ptr, outputBuffer.Ptr + entry.DataOffset, entry.DataSize);
+                return result;
             }
             else if (Compressed)
             {
