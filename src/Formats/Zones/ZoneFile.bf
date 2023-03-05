@@ -5,6 +5,7 @@ using Common.Math;
 using Common;
 using System;
 using RfgTools.Types;
+using Common.Misc;
 
 //Use to read data from RFG rfgzone_pc and layer_pc files
 public class ZoneFile36
@@ -22,7 +23,7 @@ public class ZoneFile36
     public StringView DistrictName => Header != null ? HashDictionary.FindOriginString(Header.DistrictHash).GetValueOrDefault("Unknown") : "Unknown";
 
 #region subtypes
-    [CRepr]
+    [CRepr, RequiredSize(24)]
     public struct Header
     {
         public u32 Signature;
@@ -33,7 +34,7 @@ public class ZoneFile36
         public u32 DistrictFlags;
     }
 
-    [CRepr]
+    [CRepr, RequiredSize(87368)]
     public struct RelationData
     {
         u8[4] Padding0;
@@ -44,16 +45,6 @@ public class ZoneFile36
         u32[7280] Keys;
         u32[7280] Values;
     };
-
-    //Compile time size checks. Memory layouts of these must match RFG files. Use [CRepr] as well just in case so padding isn't moved around
-    [OnCompile(.TypeInit)]
-    private static void TypeSizeChecks()
-    {
-        Runtime.Assert(sizeof(Header) == 24, "sizeof(ZoneFile.Header) must be 24 bytes to match RFG zone file format.");
-        Runtime.Assert(sizeof(RelationData) == 87368, "sizeof(ZoneFile.RelationData) must be 87368 bytes to match RFG zone file format.");
-        Runtime.Assert(sizeof(RfgZoneObject) == 56, "sizeof(RfgZoneObject) must be 56 bytes to match RFG zone file format.");
-        Runtime.Assert(sizeof(RfgZoneObject.Property) == 8, "sizeof(RfgZoneObject.Property) must be 8 bytes to match RFG zone file format.");
-    }
 #endregion subtypes
 
     //Parse zone file. If useInPlace is true bytes must stay alive for the duration of the ZoneFiles lifetime.
@@ -154,7 +145,7 @@ public class ZoneFile36
     }
 }
 
-[CRepr]
+[CRepr, RequiredSize(56)]
 public struct RfgZoneObject
 {
     public u32 ClassnameHash;
@@ -290,7 +281,7 @@ public struct RfgZoneObject
         return .Err;
     }
 
-    [CRepr]
+    [CRepr, RequiredSize(8)]
     public struct Property
     {
         public u16 Type;
