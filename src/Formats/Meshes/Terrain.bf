@@ -8,10 +8,13 @@ using Common.Misc;
 
 namespace RfgTools.Formats.Meshes
 {
-    public class TerrainLowLod
+    //Contains low lod meshes and metadata for the terrain of one map zone. Extension = cterrain_pc|gterrain_pc.
+    public class Terrain
     {
-        private u8[] _cpuFileData = null ~DeleteIfSet!(_);
-        private u8[] _gpuFileData = null ~DeleteIfSet!(_);
+        private u8[] _cpuFileDataCopy = null ~DeleteIfSet!(_);
+        private u8[] _gpuFileDataCopy = null ~DeleteIfSet!(_);
+        private Span<u8> _cpuFileBytes = .Empty;
+        private Span<u8> _gpuFileBytes = .Empty;
         public bool Loaded { get; private set; } = false;
 
         public Header* Header = null;
@@ -59,17 +62,26 @@ namespace RfgTools.Formats.Meshes
 
         public Result<void, StringView> Load(Span<u8> cpuFileBytes, Span<u8> gpuFileBytes, bool useInPlace = false)
         {
-            if (!useInPlace)
+            if (useInPlace)
+            {
+                //Keep reference to the spans. They must stay alive as long as this class for things to work correctly
+                _cpuFileBytes = cpuFileBytes;
+                _gpuFileBytes = gpuFileBytes;
+            }
+            else
             {
                 //Make a copy of the data so it stays alive as long as the object
-                _cpuFileData = new u8[cpuFileBytes.Length];
-                Internal.MemCpy(&_cpuFileData[0], cpuFileBytes.Ptr, cpuFileBytes.Length);
-                _gpuFileData = new u8[gpuFileBytes.Length];
-                Internal.MemCpy(&_gpuFileData[0], gpuFileBytes.Ptr, gpuFileBytes.Length);
-            }
-            ByteSpanStream cpuFile = scope .(cpuFileBytes);
+                _cpuFileDataCopy = new u8[cpuFileBytes.Length];
+                Internal.MemCpy(&_cpuFileDataCopy[0], cpuFileBytes.Ptr, cpuFileBytes.Length);
+                _gpuFileDataCopy = new u8[gpuFileBytes.Length];
+                Internal.MemCpy(&_gpuFileDataCopy[0], gpuFileBytes.Ptr, gpuFileBytes.Length);
 
-            Header = cpuFile.GetAndSkip<TerrainLowLod.Header>();
+                _cpuFileBytes = _cpuFileDataCopy;
+                _gpuFileBytes = _gpuFileDataCopy;
+            }
+            ByteSpanStream cpuFile = scope .(_cpuFileBytes);
+
+            Header = cpuFile.GetAndSkip<Terrain.Header>();
             if (Header.Signature != 1381123412) //ASCII string "TERR"
                 return .Err("Wrong file signature detected. Expected 1381123412.");
             if (Header.Version != 31)
@@ -264,9 +276,9 @@ namespace RfgTools.Formats.Meshes
         public Result<MeshInstanceData, StringView> GetMeshData(int index)
         {
             if (!Loaded)
-                return .Err("Mesh not loaded. You must call TerrainLowLod.Load() before calling GetMeshData()");
+                return .Err("Mesh not loaded. You must call Terrain.Load() before calling GetMeshData()");
             if (index < 0 || index > 8)
-                return .Err("Out of range index passed to TerrainLowLod.GetMeshData(). Must be in range [0, 8]");
+                return .Err("Out of range index passed to Terrain.GetMeshData(). Must be in range [0, 8]");
 
             //Calculate mesh data offset in gpu file
             i64 meshStartPos = 0;
@@ -279,7 +291,7 @@ namespace RfgTools.Formats.Meshes
 
             MeshInstanceData mesh = .();
             MeshDataBlock config = Meshes[index];
-            ByteSpanStream gpuFile = scope .(_gpuFileData);
+            ByteSpanStream gpuFile = scope .(_gpuFileBytes);
 
             //Sanity check. Make sure CRCs match. If not something probably went wrong when reading/writing from packfile
             gpuFile.Seek(meshStartPos, .Absolute);
