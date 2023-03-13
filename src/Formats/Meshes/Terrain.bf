@@ -320,8 +320,8 @@ namespace RfgTools.Formats.Meshes
     [CRepr, RequiredSize(20)]
     public struct TerrainStitchInfo
     {
-        public Vec2<f32> Bmin;
-        public Vec2<f32> Bmax;
+        public Vec2 Bmin;
+        public Vec2 Bmax;
         public u32 FilenameOffset;
     }
 
@@ -341,8 +341,8 @@ namespace RfgTools.Formats.Meshes
     [CRepr, RequiredSize(1064)]
     public struct TerrainData
     {
-        public Vec3<f32> Bmin;
-        public Vec3<f32> Bmax;
+        public Vec3 Bmin;
+        public Vec3 Bmax;
         public u32 Xres;
         public u32 Zres;
         public u32 NumOccluders;
@@ -425,7 +425,7 @@ namespace RfgTools.Formats.Meshes
     public struct SingleUndergrowthData
     {
         public u32 MeshIndex;
-        public Vec3<f32> Position;
+        public Vec3 Position;
         public f32 Scale;
         public f32 ColorLerp;
     }

@@ -109,9 +109,9 @@ namespace RfgTools.Formats.Meshes
     public struct SubmeshData
     {
         public u32 NumRenderBlocks;
-        public Vec3<f32> Offset;
-        public Vec3<f32> Bmin;
-        public Vec3<f32> Bmax;
+        public Vec3 Offset;
+        public Vec3 Bmin;
+        public Vec3 Bmax;
         public u32 RenderBlocksOffset;
     }
 

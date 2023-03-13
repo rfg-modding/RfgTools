@@ -3,13 +3,14 @@ using System.IO;
 using Common;
 using System;
 using Zlib;
+using Common.Misc;
 
 namespace RfgTools.Formats
 {
     ///Version 3 of the packfile format used by all versions of Red Faction Guerrilla (.vpp_pc and .str2_pc files)
     public class PackfileV3
     {
-        [CRepr]
+        [CRepr, RequiredSize(364)]
         public struct Header
         {
             public enum HeaderFlags : u32

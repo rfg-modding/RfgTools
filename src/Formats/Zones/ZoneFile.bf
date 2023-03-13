@@ -150,8 +150,8 @@ public struct RfgZoneObject
 {
     public u32 ClassnameHash;
     public u32 Handle;
-    public Vec3<f32> Bmin;
-    public Vec3<f32> Bmax;
+    public Vec3 Bmin;
+    public Vec3 Bmax;
     public u16 Flags;
     public u16 BlockSize;
     public u32 Parent;
@@ -227,9 +227,9 @@ public struct RfgZoneObject
         return GetPropertyInternal<bool>(name, 5);
     }
 
-    public Result<Vec3<f32>> GetVec3(StringView name) mut
+    public Result<Vec3> GetVec3(StringView name) mut
     {
-        return GetPropertyInternal<Vec3<f32>>(name, 5);
+        return GetPropertyInternal<Vec3>(name, 5);
     }
 
     public Result<Mat3> GetMat3(StringView name) mut

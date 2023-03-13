@@ -318,7 +318,7 @@ namespace RfgTools.Formats.Meshes
     public struct TerrainSubzoneData
     {
         public u32 SubzoneIndex;
-        public Vec3<f32> Position;
+        public Vec3 Position;
         public u32 PatchCount;
         public u32 PatchesOffset;
         public TerrainRenderableData RenderableData;
@@ -340,7 +340,7 @@ namespace RfgTools.Formats.Meshes
         public u32 MeshDataOffset;
         public u32 RenderableOffset;
         public BoundingBox Aabb;
-        public Vec3<f32> BspherePosition;
+        public Vec3 BspherePosition;
         public f32 BsphereRadius;
     }
 
@@ -348,11 +348,11 @@ namespace RfgTools.Formats.Meshes
     public struct TerrainPatch
     {
         public u32 InstanceOffset;
-        public Vec3<f32> Position;
+        public Vec3 Position;
         public Mat3 Rotation;
         public u32 SubmeshIndex;
         public BoundingBox LocalAabb;
-        public Vec3<f32> LocalBspherePosition;
+        public Vec3 LocalBspherePosition;
         public f32 LocalBsphereRadius;
     }
 
@@ -364,7 +364,7 @@ namespace RfgTools.Formats.Meshes
         public u32 SkirtsOffset;
         public u32 NumStitchedSkirts;
         public u32 StitchedSkirtsOffset;
-        public Vec3<f32> Position;
+        public Vec3 Position;
         public Mat3 Rotation;
         public u32 HavokHandle;
     }
@@ -379,6 +379,6 @@ namespace RfgTools.Formats.Meshes
         public u32 MeshDataOffset;
         public u32 MeshOffset;
         public u32 RenderableOffset;
-        public Vec3<f32> Position;
+        public Vec3 Position;
     }
 }

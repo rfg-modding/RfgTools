@@ -1,13 +1,14 @@
 using Common.Math;
 using Common;
 using System;
+using Common.Misc;
 
 namespace RfgTools.Types
 {
-    [CRepr]
+    [CRepr, RequiredSize(48)]
     struct PositionOrient
     {
-        public Vec3<f32> Position;
+        public Vec3 Position;
         public Mat3 Orient;
     }
 
