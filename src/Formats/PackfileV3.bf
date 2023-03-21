@@ -284,9 +284,9 @@ namespace RfgTools.Formats
 
                 //Seek to entry data. Compressed offset isn't stored so we calculate it by summing previous entries
                 _input.Seek(_dataBlockOffset);
-                for (var entry2 in ref Entries)
+                for (int j in 0 ..< targetIndex)
                 {
-                    _input.Skip(entry2.CompressedDataSize);
+                    _input.Skip(Entries[j].CompressedDataSize);
                     _input.Align2(2048);
                 }
 
@@ -374,5 +374,60 @@ namespace RfgTools.Formats
 
             return .Ok;
         }
+
+        //Extract all subfiles into memory buffer. Caller is responsible for deleting the returned object on success.
+        public Result<MemoryFileList, StringView> ExtractSubfilesToMemory()
+        {
+            if (!(Compressed && Condensed)) //This function is intended for use with str2s to avoid repeat reads and decompression. Don't need to bother with other data layouts until needed.
+                return .Err("PackfileV3.ExtractSubfilesToMemory() has only been implemented for packfiles which are compressed AND condensed");
+
+            u8[] inputBuffer = new u8[Header.CompressedDataSize];
+            u8[] outputBuffer = new u8[Header.DataSize];
+            defer { delete inputBuffer; }
+
+            //Read subfile data as one large buffer and inflate it.
+            _input.Seek(_dataBlockOffset);
+            if (_input.TryRead(inputBuffer) case .Err)
+            {
+                delete outputBuffer;
+                return .Err("Failed to read compressed data block");
+            }
+            Zlib.Inflate(inputBuffer, outputBuffer);
+
+            //Fill subfile list
+            MemoryFileList fileList = new .(outputBuffer);
+            for (int i in 0 ..< Entries.Count)
+            {
+                var entry = ref Entries[i];
+                Span<u8> entryData = .(outputBuffer.Ptr + entry.DataOffset, entry.DataSize);
+                fileList.Files.Add(new .(EntryNames[i], entryData));
+            }
+
+            return fileList;
+        }
     }
+
+    public class MemoryFileList
+    {
+        private u8[] _data ~delete _;
+        public append List<MemoryFile> Files ~ClearAndDeleteItems(_);
+
+        public this(u8[] data)
+        {
+            _data = data;
+        }
+
+        public class MemoryFile
+        {
+            public append String Name;
+            public readonly Span<u8> Data;
+
+            public this(StringView name, Span<u8> data)
+            {
+                Name.Set(name);
+                Data = data;
+            }
+        }
+    }
+
 }
