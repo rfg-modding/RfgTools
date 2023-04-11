@@ -40,7 +40,7 @@ namespace RfgTools.Formats.Meshes
             public u16 NumRenderBlocks;
         }
 
-        public Result<void, StringView> Read(ByteSpanStream stream, bool patchBufferOffsets = false) mut
+        public Result<void, StringView> Read(ByteSpanStream stream, bool patchBufferOffsets = false)
         {
             i64 startPos = stream.Position;
 
