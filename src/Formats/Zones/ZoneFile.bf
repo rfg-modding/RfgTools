@@ -309,7 +309,7 @@ public struct RfgZoneObject
         {
             if (_numProps == 0)
                 return .Err;
-            if (_curIndex == _numProps - 1)
+            if (_curIndex == _numProps)
                 return .Err;
             if (_curIndex == 0)
             {
