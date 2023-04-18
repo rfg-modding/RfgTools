@@ -75,6 +75,7 @@ namespace RfgTools.Formats
         private Stream _input ~ delete _;
         private u32 _dataBlockOffset = 0;
         private bool _readMetadata = false;
+        private i64 _baseOffset = 0; //Used to read container headers from a non-compressed vpp_pc without fully extracting them into memory
 
         //Create packfile from stream
         public this(Stream input, StringView name)
@@ -84,15 +85,17 @@ namespace RfgTools.Formats
         }
 
         //Create packfile from file
-        public this(StringView path)
+        public this(StringView path, i64 baseOffset = 0)
         {
-            _input = new FileStream()..Open(path, .Read);
+            _input = new FileStream()..Open(path, .Read, .Read);
             Name = Path.GetFileName(path, .. new String());
+            _baseOffset = baseOffset;
         }
 
         public Result<void, StringView> ReadMetadata()
         {
             //Read and validate header
+            _input.Seek(_baseOffset);
             if (_input.TryRead(.((u8*)&Header, sizeof(Header))) case .Err)
                 return .Err("Failed to read packfile header.");
             if (Header.Signature != 1367935694)
