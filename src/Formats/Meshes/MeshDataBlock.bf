@@ -8,13 +8,14 @@ using System.Collections;
 
 namespace RfgTools.Formats.Meshes
 {
+    [Reflect(.All)]
 	public class MeshDataBlock
 	{
         public MeshHeader Header;
-        public append List<SubmeshData> Submeshes;
-        public append List<RenderBlock> RenderBlocks;
+        public List<SubmeshData> Submeshes = new .() ~delete _;
+        public List<RenderBlock> RenderBlocks = new .() ~delete _;
 
-        [CRepr, RequiredSize(48)]
+        [CRepr, RequiredSize(48), Reflect(.All)]
         public struct MeshHeader
         {
             public u32 Version;
@@ -105,7 +106,7 @@ namespace RfgTools.Formats.Meshes
         }
 	}
 
-    [CRepr, RequiredSize(44)]
+    [CRepr, RequiredSize(44), Reflect(.All)]
     public struct SubmeshData
     {
         public u32 NumRenderBlocks;
@@ -115,7 +116,7 @@ namespace RfgTools.Formats.Meshes
         public u32 RenderBlocksOffset;
     }
 
-    [CRepr, RequiredSize(20)]
+    [CRepr, RequiredSize(20), Reflect(.All)]
     public struct RenderBlock
     {
         public u16 MaterialMapIndex;
