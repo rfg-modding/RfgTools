@@ -3,4 +3,4 @@
 	url = https://github.com/Moneyl/ZlibBeef.git
 [submodule "Dependencies/Common"]
 	path = Dependencies/Common
-	url = https://github.com/Moneyl/NF_Common.git
+	url = https://github.com/rfg-modding/NF_Common.git
