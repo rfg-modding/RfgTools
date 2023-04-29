@@ -356,7 +356,7 @@ namespace RfgTools.Formats.Meshes
         public f32 LocalBsphereRadius;
     }
 
-    [CRepr, RequiredSize(72)]
+    [CRepr, RequiredSize(104)]
     public struct TerrainStitchInstance
     {
         public u32 StitchChunkNameOffset;
@@ -367,6 +367,7 @@ namespace RfgTools.Formats.Meshes
         public Vec3 Position;
         public Mat3 Rotation;
         public u32 HavokHandle;
+        public u8[32] Padding0;
     }
 
     [CRepr, RequiredSize(40)]
