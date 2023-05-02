@@ -352,7 +352,7 @@ Likely how much control is reduced when the building is control. This is only lo
 ----------------
 
 ### **general_mover** (*inherits [object_mover](#object_mover-inherits-object)*)
-Another class of movers. The exact difference between this and other movers isn't known yet. Though typically simpler map objects like explosive barrels with be a `general_mover`.
+Another class of movers. The exact difference between this and other movers isn't known yet. Though typically simpler map objects like explosive barrels will be a `general_mover`.
 
 
 **gm_flags** (*uint*, Type=5, Size=4):
