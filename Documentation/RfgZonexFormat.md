@@ -437,12 +437,12 @@ Known internally as "subpiece index". Purpose unknown. This property is only loa
 
 Known internally as "move type". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is on.
 
-- Fixed = 0 (default)
-- Normal = 1 (unknown)
-- Lite = 2 (unknown)
-- Ultra Lite = 3 (unknown)
-- World Only = 4 (no collision but you can still destroy it with a hammer for example)
-- No Collision = 5 (no collision)
+- Fixed = `0` (default)
+- Normal = `1` (unknown)
+- Lite = `2` (unknown)
+- Ultra Lite = `3` (unknown)
+- World Only = `4` (no collision but you can still destroy it with a hammer for example)
+- No Collision = `5` (no collision)
 
 
 **destruct_uid** (*uint*, Type=5, Size=4):
