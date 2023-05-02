@@ -227,7 +227,7 @@ Options:
 
 **trigger_flags** (*flags(string)*, Type=4, Optional)
 
-Purpose unknown.
+Disables the trigger region during a mission or activity, tested with the cliff in the tutorial.
 
 Options:
 - `not_in_activity`
