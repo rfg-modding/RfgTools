@@ -739,6 +739,7 @@ Options:
 
 Purpose unknown.
 
+- For `Siege target` children it determines which siege objects are unlocked to destroy, eg if you set it to <code>1</code> it would be the first target the attackers can destroy, you can have multiple targets unlocked by using the same number and if you wanted to have targets unlocked one at a time you would use <code>1</code>, <code>2</code>, <code>3</code> and so on.
 
 **backpack_type** (*enum(string)*, Type=4):
 
