@@ -435,7 +435,7 @@ Known internally as "subpiece index". Purpose unknown. This property is only loa
 
 **mtype** (*uint*, Type=5, Size=4):
 
-Known internally as "move type". Purpose unknown. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is on.
+Known internally as "move type". Not all uses known. This property is only loaded if bit 2 of `flags` (inherited from [object_mover](#object_mover-inherits-object)) is on.
 
 - Fixed = `0` (default)
 - Normal = `1` (unknown)
@@ -467,15 +467,15 @@ This is the type used for most destructible structures like small walls, and bri
 
 **mtype** (*uint*, Type=5, Size=4):
 
-Called "move type" internally. Exact use unknown.
+Called "move type" internally. Not all uses known.
 
 Options:
-- Fixed = `0`
-- Normal = `1`
-- Lite = `2`
-- Ultra Lite = `3`
-- World Only = `4`
-- No Collision = `5`
+- Fixed = `0` (default)
+- Normal = `1` (unknown)
+- Lite = `2` (unknown)
+- Ultra Lite = `3` (unknown)
+- World Only = `4` (no collision but you can still destroy it with a hammer for example)
+- No Collision = `5` (no collision)
 
 
 **rfg_flags** (*uint*, Type=5, Size=4):
@@ -737,9 +737,7 @@ Options:
 
 **priority** (*int*, Type=5, Size=4):
 
-Purpose unknown.
-
-- For `Siege target` children it determines which siege objects are unlocked to destroy, eg if you set it to <code>1</code> it would be the first target the attackers can destroy, you can have multiple targets unlocked by using the same number and if you wanted to have targets unlocked one at a time you would use <code>1</code>, <code>2</code>, <code>3</code> and so on.
+- For `Siege target` children it determines which siege objects are unlocked to destroy, eg if you set it to <code>1</code> it would be the first target the attackers can destroy, you can have multiple targets unlocked by using the same number and if you wanted to have targets unlocked one at a time you would use <code>1</code>, <code>2</code>, <code>3</code> and so on. All other `multi_object_markers` use a value of `4294967295` and it appears to have no use unless the `marker_type` is set to `Siege target`.
 
 **backpack_type** (*enum(string)*, Type=4):
 
