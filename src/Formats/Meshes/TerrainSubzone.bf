@@ -97,7 +97,6 @@ namespace RfgTools.Formats.Meshes
             {
                 //TODO: Read stitch piece name
                 StitchPieceNames2.Add(cpuFile.ReadStrC(.. new String()));
-                cpuFile.Skip(1); //Move past null terminator
                 cpuFile.Align2(4);
                 cpuFile.Skip(4);
 
