@@ -200,7 +200,7 @@ Only loaded by the game when `trigger_shape` is `sphere`. Its a local space boun
 
 **enabled** (*bool*, Type=5, Size=1):
 
-Mostly likely allows mappers to enable/disable the region. This hasn't been tested at the time of writing.
+Allows mappers to enable/disable the region.
 
 
 **region_type** (*enum(string)*, Type=4, Optional):
