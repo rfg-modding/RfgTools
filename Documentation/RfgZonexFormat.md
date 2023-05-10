@@ -614,12 +614,12 @@ A ladder. Players and NPCs can climb it.
 
 **ladder_rungs** (*int*, Type=5, Size=4):
 
-Likely the number of rungs on the ladder. Untested.
+The number of rungs on the ladder. Haven't tested changing it yet.
 
 
 **ladder_enabled** (*bool*, Type=5, Size=1):
 
-Likely toggles whether players and NPCs can climb it. Untested.
+Likely toggles whether players and NPCs can climb it. The ladders I checked in both SP & MP lacked this prop, tested adding it and disabling and both the player and NPCs could still climb it.
 
 ----------------
 
