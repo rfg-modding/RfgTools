@@ -573,6 +573,26 @@ Unique ID of an explosion stored in an 8 bit integer.
 Plays an effect such as smoke, fire, explosion, sparks, etc.
 
 
+**sound_alr** (*string*, Type=?, ?):
+
+Untested.
+
+
+**sound** (*string*, Type=?, ?):
+
+The name of the sound in `effects.xtbl`.
+
+
+**visual** (*string*, Type=?, ?):
+
+The name of the effect in `effects.xtbl`.
+
+
+**looping** (*bool*, Type=?, Size=?):
+
+Controls if the effect will play once or continuously.
+
+
 **effect_type** (*string[67]*, Type=4, Optional):
 
 The name of an entry in `effects.xtbl`.
@@ -602,6 +622,16 @@ A weapon that the player can pick up by running into.
 **weapon_type** (*string[255]*, Type=4, Optional):
 
 The name of an entry in `weapons.xtbl`. Only loaded if `item_type` isn't present.
+
+
+**preplaced** (*bool*, Type=?, Size=?):
+
+At the time of writing after testing in multiplayer this doesn't stop the weapon from spawning but you can use the gamemode flags.
+
+
+**respawns** (*bool*, Type=?, Size=?):
+
+Causes the weapon to not re-spawn again during a match after it has been picked up for the first time
 
 
 **Note:** This class has some runtime properties that were excluded. Just like `item` and `object_effect` do.
