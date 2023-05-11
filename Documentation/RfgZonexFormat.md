@@ -570,7 +570,7 @@ Unique ID of an explosion stored in an 8 bit integer.
 ----------------
 
 ### **object_effect** (*inherits [object](#object)*)
-Plays an effect such as smoke, fire, explosion, sparks, etc.
+Plays an effect such as smoke, fire, explosion, sparks, etc. Also can play sounds if the effect has one in `effects.xtbl` and the `sound` string is used.
 
 
 **sound_alr** (*string*, Type=?, ?):
@@ -588,7 +588,7 @@ The name of the sound in `effects.xtbl`.
 The name of the effect in `effects.xtbl`.
 
 
-**looping** (*bool*, Type=?, Size=?):
+**looping** (*bool*, Type=5, Size=1):
 
 Controls if the effect will play once or continuously.
 
@@ -624,14 +624,14 @@ A weapon that the player can pick up by running into.
 The name of an entry in `weapons.xtbl`. Only loaded if `item_type` isn't present.
 
 
-**preplaced** (*bool*, Type=?, Size=?):
+**preplaced** (*bool*, Type=5, Size=1):
 
-At the time of writing after testing in multiplayer this doesn't stop the weapon from spawning but you can use the gamemode flags.
+Tested in multiplayer & this doesn't stop the weapon from spawning but you can use the gamemode flags to disable weapon spawns without deleting them.
 
 
-**respawns** (*bool*, Type=?, Size=?):
+**respawns** (*bool*, Type=5, Size=1):
 
-Causes the weapon to not re-spawn again during a match after it has been picked up for the first time
+Causes the weapon to not respawn again during a match after it has been picked up for the first time.
 
 
 **Note:** This class has some runtime properties that were excluded. Just like `item` and `object_effect` do.
@@ -649,7 +649,7 @@ The number of rungs on the ladder. Haven't tested changing it yet.
 
 **ladder_enabled** (*bool*, Type=5, Size=1):
 
-Likely toggles whether players and NPCs can climb it. The ladders I checked in both SP & MP lacked this prop, tested adding it and disabling and both the player and NPCs could still climb it.
+The ladders I checked in both SP & MP lacked this prop, tested adding it, disabling, enabling and both the player and NPCs could still climb it. Might only be used at runtime to disable ladders when the building has been destroyed enough?
 
 ----------------
 
@@ -764,10 +764,11 @@ Options:
 - `Civilian`
 - `Marauder`
 
+Note: In multiplayer the only valid teams are `Neutral`, `Guerilla` & `EDF`. Other teams are singleplayer only.
 
 **priority** (*int*, Type=5, Size=4):
 
-- For `Siege target` children it determines which siege objects are unlocked to destroy, eg if you set it to <code>1</code> it would be the first target the attackers can destroy, you can have multiple targets unlocked by using the same number and if you wanted to have targets unlocked one at a time you would use <code>1</code>, <code>2</code>, <code>3</code> and so on. All other `multi_object_markers` use a value of `4294967295` and it appears to have no use unless the `marker_type` is set to `Siege target`.
+- For `Siege target` children it determines which siege objects are unlocked to destroy, eg if you set it to <code>1</code> it would be the first target the attackers can destroy, you can have multiple targets unlocked by using the same number and if you wanted to have targets unlocked one at a time you would use <code>1</code>, <code>2</code>, <code>3</code> and so on. All other `multi_object_markers` use a value of `4294967295` and it appears to have no use unless the `marker_type` is set to `Siege target`. If you use a value of `4294967295` for `Siege target` children they are also unlocked at the same time.
 
 **backpack_type** (*enum(string)*, Type=4):
 
@@ -796,7 +797,7 @@ The number of backpacks the rack can provide to players.
 
 **random_backpacks** (*bool*, Type=5, Size=1):
 
-Untested.
+Tested and it doesn't randomize the backpack on the rack. Might be related to the random backpack option in multiplayer custom game settings?
 
 
 **group** (*int*, Type=5, Size=4):
