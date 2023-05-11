@@ -611,6 +611,36 @@ Base class for pickup objects like weapons and MP flags.
 The name of an entry in `items_3d.xtbl`.
 
 
+**preplaced** (*bool*, Type=5, Size=1, Optional):
+
+Tested in multiplayer & this doesn't stop the weapon from spawning but you can use the gamemode flags to disable weapon spawns without deleting them.
+
+
+**respawns** (*bool*, Type=5, Size=1, Optional):
+
+Causes the weapon to not respawn again during a match after it has been picked up for the first time.
+
+
+**respawn** (*bool*, Type=5, Size=1, Optional):
+
+Untested.
+
+
+**mass_override** (*float*, Type=5, Size=4, Optional):
+
+Untested.
+
+
+**flags** (*uint*, Type=5, Size=4, Optional):
+
+32bit integer holding bitflags. Untested.
+
+
+**ctype** (*uint*, Type=5, Size=4, Optional):
+
+Labelled by the game as "collision type". Exact values unknown and untested. May be related to the values for the ctype field on [general_mover](#general_mover-inherits-object_mover).
+
+
 **Note:** This class has several other properties that aren't documented for the moment. They essentially do the same thing as `item_type` but using runtime data. They aren't documented for now since they appear to be for runtime use only and `item_type` overrides them.
 
 ----------------
@@ -622,16 +652,6 @@ A weapon that the player can pick up by running into.
 **weapon_type** (*string[255]*, Type=4, Optional):
 
 The name of an entry in `weapons.xtbl`. Only loaded if `item_type` isn't present.
-
-
-**preplaced** (*bool*, Type=5, Size=1):
-
-Tested in multiplayer & this doesn't stop the weapon from spawning but you can use the gamemode flags to disable weapon spawns without deleting them.
-
-
-**respawns** (*bool*, Type=5, Size=1):
-
-Causes the weapon to not respawn again during a match after it has been picked up for the first time.
 
 
 **Note:** This class has some runtime properties that were excluded. Just like `item` and `object_effect` do.
