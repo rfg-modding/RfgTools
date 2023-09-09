@@ -1,5 +1,5 @@
 FileVersion = 1
-Dependencies = {corlib = "*", Zlib = "*", Common = "*"}
+Dependencies = {corlib = "*", Zlib = "*", Common = "*", Xml-Beef = "*"}
 
 [Project]
 Name = "RfgTools"

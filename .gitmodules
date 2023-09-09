@@ -4,3 +4,6 @@
 [submodule "Dependencies/Common"]
 	path = Dependencies/Common
 	url = https://github.com/rfg-modding/NF_Common.git
+[submodule "Dependencies/Xml-Beef"]
+	path = Dependencies/Xml-Beef
+	url = https://github.com/LauraRozier/Xml-Beef.git

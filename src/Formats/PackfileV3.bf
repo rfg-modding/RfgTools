@@ -4,6 +4,12 @@ using Common;
 using System;
 using Zlib;
 using Common.Misc;
+using System.Collections;
+using System;
+using RfgTools.Hashing;
+using System.Interop;
+using Xml_Beef;
+using static Zlib.Zlib;
 
 namespace RfgTools.Formats
 {
@@ -136,22 +142,27 @@ namespace RfgTools.Formats
         //Used by extraction functions so extraction can be stopped early
         private mixin ExitCheck(bool* condition)
         {
-        	if((*condition) == false)
+        	if(condition != null && (*condition) == false)
         		return;
         }
 
         //Extracts subfiles to folder. Can pass it a bool that it will check periodically for an early exit signal
-        public void ExtractSubfiles(StringView outputFolderPath, bool* earlyExitCondition = null)
+        public void ExtractSubfiles(StringView outputFolderPath, bool* earlyExitCondition = null, bool writeStreamsFile = true)
         {
             //Ensure we've read metadata and skip empty packfiles
             if (!_readMetadata)
                 ReadMetadata();
-            if (_input.Length <= 2048)
-                return;
 
             //Seek to data block and ensure out dir exists
             _input.Seek(_dataBlockOffset, .Absolute);
             Directory.CreateDirectory(outputFolderPath);
+
+            //@streams.xml contains files in packfile and their order
+            if (writeStreamsFile)
+                WriteStreamsFile(outputFolderPath);
+
+            if (_input.Length <= 2048)
+	            return;
 
             //Extract subfiles. Pick method based on flags.
             if (Compressed && Condensed)
@@ -162,6 +173,23 @@ namespace RfgTools.Formats
                 ExtractDefault(outputFolderPath, earlyExitCondition);
 
             return;
+        }
+
+        private void WriteStreamsFile(StringView outputFolderPath)
+        {
+            Xml xml = scope .();
+            XmlNode streams = xml.AddChild("streams");
+            streams.AttributeList.Add("endian", "Little");
+            streams.AttributeList.Add("compressed", Compressed ? "True" : "False");
+            streams.AttributeList.Add("condensed", Condensed ? "True" : "False");
+
+            for (StringView entryName in EntryNames)
+            {
+                XmlNode entry = streams.AddChild("entry");
+                entry.AttributeList.Add("name", .. scope String(entryName));
+                entry.NodeValue.Set(entryName);
+            }
+            xml.SaveToFile(scope $@"{outputFolderPath}\@streams.xml");
         }
 
         //Extract subfiles that are both compressed and condensed. Files are stored in one large compressed data blob in this format.
@@ -408,6 +436,313 @@ namespace RfgTools.Formats
 
             return fileList;
         }
+
+        //Extended version of packfile entries used during packing
+        private class WriterEntry
+        {
+            public PackfileV3.Entry FileEntry; //The entry metadata that gets written to the packfile (exact same data structure)
+            public append String FullPath;
+            public append String Filename;
+            public int FileSize;
+        }
+
+        private static Result<void> ReadStreamsFile(StringView inputPath, ref bool compressed, ref bool condensed, List<WriterEntry> writerEntries)
+        {
+            String streamsXmlPath = scope $"{inputPath}/@streams.xml";
+            if (!File.Exists(streamsXmlPath))
+                return .Err;
+
+            String text = File.ReadAllText(streamsXmlPath, .. new .());
+            defer delete text;
+            Xml xml = scope .();
+            xml.LoadFromString(text, (i32)text.Length);
+
+            //<streams> block should always be the root
+            XmlNode streams = xml.ChildNodes[0];
+
+            //Get flags
+            XmlAttribute compressedAttribute = streams.AttributeList.Find("compressed");
+            if (compressedAttribute == null)
+                return .Err;
+
+            XmlAttribute condensedAttribute = streams.AttributeList.Find("condensed");
+            if (condensedAttribute == null)
+                return .Err;
+
+            compressed = (compressedAttribute.Value.Equals("true", .OrdinalIgnoreCase));
+            condensed = (condensedAttribute.Value.Equals("true", .OrdinalIgnoreCase));
+
+            //Read entries so the order is preserved. Needed for str2_pc files since the game expects cpu/gpu file pairs to be in order and to match the asm_pc order.
+            XmlNodeList entries = streams.FindNodes("entry");
+            defer delete entries;
+            for (XmlNode entry in entries)
+            {
+                XmlAttribute nameAttribute = entry.AttributeList.Find("name");
+                if (nameAttribute == null)
+                    return .Err;
+
+                String entryName = nameAttribute.Value;
+                String entryPath = scope $"{inputPath}\\{entryName}";
+                if (!File.Exists(entryPath))
+                    return .Err;
+
+                //Entry file exists. Make a new writer entry for it
+                WriterEntry entry = writerEntries.Add(.. new .());
+                entry.FullPath.Set(entryPath);
+                entry.Filename.Set(entryName);
+                entry.FileSize = File.GetFileSize(entryPath);
+            }
+
+            return .Ok;
+        }
+
+        public static Result<void> Pack(StringView inputPath, StringView outputPath, bool preferCompressed, bool preferCondensed)
+        {
+            if (!Directory.Exists(inputPath))
+            {
+                return .Err;
+            }
+            Directory.CreateDirectory(Path.GetDirectoryPath(outputPath, .. scope .()));
+
+            bool compressed = preferCompressed;
+            bool condensed = preferCondensed;
+            u32 curNameOffset = 0;
+            u32 curDataOffset = 0;
+            u32 totalDataSize = 0;
+            u32 totalNamesSize = 0;
+
+            FileStream output = new .()..Open(outputPath, mode: .OpenOrCreate, access: .Write, share: .None, bufferSize: 1000000);
+            List<WriterEntry> entries = new .();
+            defer delete output;
+            defer { DeleteContainerAndItems!(entries); }
+
+            String outputExtension = Path.GetExtension(outputPath, .. scope .());
+            bool isStr2 = (outputExtension == ".str2_pc");
+            bool usingStreamsFile = isStr2 || File.Exists(scope $@"{inputPath}\@streams.xml");
+            if (usingStreamsFile)
+            {
+                if (ReadStreamsFile(inputPath, ref compressed, ref condensed, entries) case .Err)
+	                return .Err;
+            }
+
+            //Get a list of input files if @streams.xml isn't used
+            if (!usingStreamsFile)
+            {
+                for (var file in Directory.EnumerateFiles(inputPath))
+                {
+                    if (file.IsDirectory)
+                        continue;
+                    if (file.GetFileName(.. scope .()) == "@streams.xml")
+                        continue;
+
+                    WriterEntry entry = entries.Add(.. new .());
+                    file.GetFilePath(entry.FullPath);
+                    file.GetFileName(entry.Filename);
+                    entry.FileSize = file.GetFileSize();
+                }
+            }
+
+            //Create for each input file & calculate size + offset values
+            for (WriterEntry entry in entries)
+            {
+                entry.FileEntry = .()
+				{
+					NameOffset = curNameOffset,
+                    DataOffset = curDataOffset,
+                    NameHash = Hash.HashVolition(entry.Filename),
+                    DataSize = (u32)entry.FileSize,
+                    CompressedDataSize = compressed ? 0 : u32.MaxValue
+				};
+
+                curNameOffset += (u32)entry.Filename.Length + 1;
+                curDataOffset += (u32)entry.FileSize;
+                totalDataSize += (u32)entry.FileSize;
+                totalNamesSize += (u32)entry.Filename.Length + 1;
+
+                if (compressed && condensed && entry != entries.Back && !isStr2)
+                {
+                    curDataOffset += (u32)Stream.CalcAlignment(curDataOffset, 16);
+                    totalDataSize += (u32)Stream.CalcAlignment(totalDataSize, 16);
+                }
+                else if (!condensed)
+                {
+                    curDataOffset += (u32)Stream.CalcAlignment(curDataOffset, 2048);
+                }
+            }
+
+            Header.HeaderFlags packfileFlags = 0;
+            if (compressed)
+                packfileFlags |= .Compressed;
+            if (condensed)
+                packfileFlags |= .Condensed;
+
+            //Set header values that we know. Some can't be known until the whole file is written.
+            Header header = .()
+            {
+                Signature = 0x51890ACE,
+                Version = 3,
+                ShortName = "",
+                PathName = "",
+                Flags = packfileFlags,
+                NumSubfiles = (u32)entries.Count,
+                FileSize = 0, //Not yet known, set after writing file data. Includes padding
+                EntryBlockSize = (u32)entries.Count * 28, //Doesn't include padding
+                NameBlockSize = totalNamesSize, //Doesn't include padding
+                DataSize = (compressed && condensed) ? totalDataSize : 0, //Includes padding
+                CompressedDataSize = compressed ? 0 : 0xFFFFFFFF, //Not known, set to 0xFFFFFFFF if not compressed
+            };
+
+            //Calc data start and skip to it's location. We'll circle back and write header + entries at the end when he have all stats
+            u32 dataStart = 0;
+            dataStart += 2048; //Header size
+            dataStart += (u32)entries.Count * 28; //Each entry is 28 bytes
+            dataStart += (u32)Stream.CalcAlignment(dataStart, 2048); //Align(2048) after end of entries
+            dataStart += totalNamesSize; //Filenames list
+            dataStart += (u32)Stream.CalcAlignment(dataStart, 2048); //Align(2048) after end of file names
+            output.WriteNullBytes((u64)(dataStart - output.Position));
+
+            //Note: This code could probably be cleaned up quite a bit more. It's basically a straight port form the C++ version since I didn't want to break packfile packing (difficult to debug)
+            //Write subfile data
+            if (entries.Count > 0)
+            {
+                if (compressed && condensed)
+                {
+                    ZStream deflateStream = .()
+                    {
+                        ZAlloc = null,
+                        ZFree = null,
+                        Opaque = null,
+                        AvailIn = 0,
+                        NextIn = null,
+                        AvailOut = 0,
+                        NextOut = null
+                    };
+                    Zlib.DeflateInit(&deflateStream, isStr2 ? .BestCompression : .BestSpeed);
+
+                    c_ulong lastOut = 0;
+                    u64 tempDataOffset = 0;
+                    for (WriterEntry entry in entries)
+                    {
+                        List<u8> bytes = File.ReadAll(entry.FullPath, .. new .());
+                        defer delete bytes;
+                        tempDataOffset += (u64)bytes.Count;
+
+                        //Add align(16) null bytes after uncompressed data. Not added to entry.DataSize but necessary for compression for some reason
+                        if (entry != entries.Back && !isStr2)
+                        {
+                            u32 alignPad = (u32)Stream.CalcAlignment(tempDataOffset, 16);
+                            if (alignPad != 0)
+                            {
+                                tempDataOffset += alignPad;
+                                for (u32 j = 0; j < alignPad; j++)
+                                {
+                                    bytes.Add(0);
+                                }
+                            }
+                        }
+
+                        c_ulong deflateUpperBound = Zlib.DeflateBound(&deflateStream, (c_ulong)bytes.Count);
+                        u8[] compressedBytes = new u8[deflateUpperBound];
+                        defer delete compressedBytes;
+
+                        deflateStream.NextIn = bytes.Ptr;
+                        deflateStream.AvailIn = (u32)bytes.Count;
+                        deflateStream.NextOut = compressedBytes.Ptr;
+                        deflateStream.AvailOut = deflateUpperBound;
+                        Zlib.Deflate(&deflateStream, .SyncFlush);
+
+                        c_ulong entryCompressedSize = deflateStream.TotalOut - lastOut;
+                        entry.FileEntry.CompressedDataSize = entryCompressedSize;
+                        header.CompressedDataSize += entryCompressedSize;
+
+                        output.Write(Span<u8>(compressedBytes.Ptr, (int)entryCompressedSize));
+                        lastOut = deflateStream.TotalOut;
+                    }
+
+                    Zlib.DeflateEnd(&deflateStream);
+                }
+                else if (compressed)
+                {
+                    for (WriterEntry entry in entries)
+                    {
+                        //Read subfile data and compress it
+                        List<u8> bytes = File.ReadAll(entry.FullPath, .. new .());
+                        defer delete bytes;
+
+                        var deflateResult = Zlib.Deflate(bytes, .BestSpeed);
+                        if (deflateResult case .Err(ZlibResult err))
+                        {
+                            //TODO: Add logging function to RfgTools which accepts callbacks so it can be hooked into the Nanoforge logger/error handling
+                            return .Err;
+                        }
+                        var compressedData = deflateResult.Get();
+                        defer delete compressedData.Buffer;
+
+                        //Write compressed data to file
+                        output.Write(Span<u8>(compressedData.Buffer.Ptr, (int)compressedData.DataSize));
+
+                        //Update data sizes
+                        entry.FileEntry.CompressedDataSize = (u32)compressedData.DataSize;
+                        header.CompressedDataSize += (u32)compressedData.DataSize;
+                        header.DataSize += entry.FileEntry.DataSize;
+
+                        //Add alignment padding for all except final entry
+                        if (entry != entries.Back)
+                        {
+                            u32 padSize = (u32)output.AlignWrite(2048);
+                            u32 uncompressedPad = (u32)Stream.CalcAlignment(header.DataSize, 2048);
+                            header.DataSize += uncompressedPad; //header.DataSize is calculated the same way even when compressed
+                            header.CompressedDataSize += padSize;
+                        }
+                    }
+                }
+                else
+                {
+                    for (WriterEntry entry in entries)
+                    {
+                        List<u8> bytes = File.ReadAll(entry.FullPath, .. new .());
+                        defer delete bytes;
+                        output.Write(Span<u8>(bytes.Ptr, bytes.Count));
+                        header.DataSize += entry.FileEntry.DataSize;
+
+                        //There's no padding bytes if the packfile is condensed or after the final entry
+                        if (!condensed && entry != entries.Back)
+                            header.DataSize += (u32)output.AlignWrite(2048);
+                    }
+                }
+            }
+
+            //Write header
+            header.FileSize = (u32)output.Length;
+            output.Flush();
+            output.Seek(0);
+            output.Write(header);
+            output.AlignWrite(2048);
+
+            //Write entry metadata. They're written manually since the internal representation doesn't match the file representation exactly.
+            for (WriterEntry entry in entries)
+            {
+                output.Write<u32>(entry.FileEntry.NameOffset);
+                output.WriteNullBytes(4);
+                output.Write<u32>((u32)entry.FileEntry.DataOffset);
+                output.Write<u32>(entry.FileEntry.NameHash);
+                output.Write<u32>(entry.FileEntry.DataSize);
+                output.Write<u32>(entry.FileEntry.CompressedDataSize);
+                output.WriteNullBytes(4);
+            }
+            output.AlignWrite(2048);
+
+            //Write entry names
+            for (WriterEntry entry in entries)
+            {
+                output.Write(entry.Filename);
+                output.Write('\0'); //Need null terminator
+            }
+            output.AlignWrite(2048);
+            output.Flush();
+
+            return .Ok;
+        }
     }
 
     public class MemoryFileList
@@ -432,5 +767,4 @@ namespace RfgTools.Formats
             }
         }
     }
-
 }

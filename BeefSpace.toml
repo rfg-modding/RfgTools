@@ -1,5 +1,5 @@
 FileVersion = 1
-Projects = {RfgTools = {Path = "."}, Zlib = {Path = "Dependencies/ZlibBeef"}}
+Projects = {RfgTools = {Path = "."}, Zlib = {Path = "Dependencies/ZlibBeef"}, Xml-Beef = {Path = "Dependencies/Xml-Beef"}}
 
 [Workspace]
 StartupProject = "RfgTools"
