@@ -288,7 +288,7 @@ Options:
 - `one_of_many`
 - `plume_on_death`
 - `invulnerable`
-- `inherit_damaga_pct`
+- `inherit_damage_pct`
 - `regrow_on_stream`
 - `casts_drop_shadow`
 - `disable_collapse_effect`
