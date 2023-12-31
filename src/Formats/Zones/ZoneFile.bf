@@ -274,7 +274,11 @@ public struct RfgZoneObject
                 if (prop.Type != 4)
                     return .Err;
 
-                return StringView((char8*)prop.Data, prop.Size);
+                StringView str = .((char8*)prop.Data, prop.Size);
+                if (str.EndsWith('\0'))
+	                str.RemoveFromEnd(1); //Don't include null terminator
+
+                return str;
             }
         }
 
