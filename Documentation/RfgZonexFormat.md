@@ -847,73 +847,381 @@ Options:
 ----------------
 
 ## SP only objects
-These types are only used in single player zones. One exception is `navpoint` and `cover_node` objects found in the Nordic Special map. This is thought to be a mistake or some objects left behind from the remaster developers learning the mapping tools. The section is incomplete since the Nanoforge rewrite doesn't support opening and editing single player maps yet. It'll be updated when SP support is added.
+These types are only used in single player zones. One exception is `navpoint`, `cover_node`, `constraint`, and `object_action_node` objects found in the Nordic Special map. This is thought to be a mistake or some objects left behind from the remaster developers learning the mapping tools. The section is incomplete since the Nanoforge rewrite doesn't support opening and editing single player maps yet. It'll be updated when SP support is added.
 
 
 ### **navpoint** (*inherits [object](#object)*)
 Thought to be used by AI for navigation.
 
+
+**navpoint_data** (*buffer*, Type=6, Size=Variable, Optional):
+
+Combined buffer with several fields that make up a navpoint (fields not yet documented). Should be able to figure out the fields by looking at how the game reads from the buffer in navpoint::serialize() when the navpoint_data field is present.
+
+
+**nav_type** (*u8*, Type=5, Size=1, Optional):
+
+Only read if `navpoint_data` is not present. Alternative field for `navpoint_type`. Stored in a u8 instead of a string.
+
+Options:
+- `ground` = 0
+- `patrol` = 1
+- `pedestrian` = 2
+- `floating` = 3
+- `supply dropoff` = 4
+- `road` = 5
+- `road jump` = 6
+- `road jump dest` = 7
+- `road jump start` = 8
+- `road checkpoint` = 9
+- `path` = 10
+- `transition` = 11
+- `ladder transition` = 12
+- `ladder` = 13
+- `stairs` = 14
+- `transition jump` = 15
+- `transition leap over` = 16
+- `road bridge` = 22
+- `path door` = 23
+- `transition door` = 24
+
+
+**navpoint_type** (*enum(string)*, Type=4, Optional):
+
+Only read if `navpoint_data` and `nav_type` are not present. In that case it is required.
+
+Options:
+- `ground`
+- `patrol`
+- `pedestrian`
+- `floating`
+- `supply dropoff`
+- `road`
+- `road jump`
+- `road jump dest`
+- `road jump start`
+- `road checkpoint`
+- `path`
+- `transition`
+- `ladder transition`
+- `ladder`
+- `stairs`
+- `transition jump`
+- `transition leap over`
+- `road bridge`
+- `path door`
+- `transition door`
+
+
+**outer_radius** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose. Only read if `navpoint_data` is not present.
+
+Default = `0.5`
+
+
+**speed_limit** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose. Likely used by vehicle AI to control speed. Only read if `navpoint_data` is not present.
+
+Default = `10.0`
+
+
+**dont_follow_road** (*bool*, Type=5, Size=1, Optional):
+
+Unconfirmed purpose. Only loaded if type `nav_type` and `navpoint_type` are not `patrol`, and `navpoint_data` is not present.
+
+
+**ignore_lanes** (*bool*, Type=5, Size=1, Optional):
+
+Unconfirmed purpose. Only loaded if type `nav_type` and `navpoint_type` are not `patrol`, and `navpoint_data` is not present.
+
+
+**obj_links** (*buffer*, Type=6, Size=Variable, Optional):
+
+Unconfirmed purpose.
+
+
+**navlinks** (*buffer*, Type=6, Size=Variable, Optional):
+
+Unconfirmed purpose. Only loaded if `obj_links` isn't present.
+
+
+**nav_orient** (*Mat33*, Type=5, Size=36, Optional):
+
+Unconfirmed purpose. Only loaded if the type is `road checkpoint`.
+
+----------------
+
 ### **cover_node** (*inherits [object](#object)*)
 Thought to be used for the players cover system.
 
+
+**covernode_data** (*buffer*, Type=6, Size=Variable, Optional):
+
+Combined buffer with several fields that make up a cover_node (fields not yet documented). Should be able to figure out the fields by looking at how the game reads from the buffer in cover_node::serialize() when the covernode_data field is present.
+
+
+**cnp** (*buffer*, Type=6, Size=Variable, Optional):
+
+Appears to be an old version of `covernode_data` with different fields/layout.
+
+
+**def_angle_left** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose.
+
+Default = `90.0`
+
+
+**def_angle_right** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose.
+
+Default = `90.0`
+
+
+**off_angle_left** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose.
+
+
+**angle_left** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose. Only loaded if `off_angle_left` isn't present. It's required in that case.
+
+
+**off_angle_right** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose.
+
+
+**angle_right** (*float*, Type=5, Size=4, Optional):
+
+Unconfirmed purpose. Only loaded if `off_angle_right` isn't present. It's required in that case.
+
+
+**binary_flags** (*u16*, Type=5, Size=2, Optional):
+
+Bitflags in u16. It's not known if these are meant to be set in zone files or if they're mainly runtime flags.
+
+Here are the known bits in the first byte. Each flag is 1 bit:
+- `disabled_reason`
+- `dynamic`
+- `zone`
+- `vehicle`
+- `crouch`
+
+Here are the known bits in the second byte. Each flag is 1 bit:
+- `fire_popup`
+- `fire_left`
+- `fire_right`
+- `off_navmesh`
+- `on_mover`
+
+
+**stance** (*string*, Type=4, Optional):
+
+Purpose unconfirmed. If it contains `crouching` it activates the 7th bit (2^7) on the first byte of the u16 described for `binary_flags`. We don't know what that flag is at the moment. It looks like any values other than `crouching` get ignored.
+
+
+**firing_flags** (*string*, Type=4, Optional):
+
+If `stance` contains `crouching` and this property contains `standing` then the `disabled_reason` bit in the flags described in `binary_flags` gets enabled.
+If this field contains `left` then the `dynamic` bit is enabled.
+If this field contains `right` then the `zone` bit is enabled
+
+----------------
+
 ### **constraint** (*inherits [object](#object)*)
+Used for physics contraints like rotating joints on windmills.
+
+
+**template** (*buffer*, Type=5, Size=156, Optional):
+
+Has a bunch of fields defining the constraint type and its configuration. Not yet documented in this file. See the `constraint_template` struct.
+
+
+**host_handle** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed.
+
+
+**child_handle** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed.
+
+
+**host_index** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed.
+
+
+**child_index** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed.
+
+
+**host_hk_alt_index** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed. Appears to be a runtime only value or a value only used when the game saves and loads a SP game.
+
+
+**child_hk_alt_index** (*uint*, Type=5, Size=4, Optional):
+
+Purpose unconfirmed. Appears to be a runtime only value or a value only used when the game saves and loads a SP game.
+
+----------------
 
 ### **object_squad** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_turret_spawn_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_air_strike_defense_node** (*inherits [object](#object)*)
 Start location for a cancelled or incomplete activity.
 
+----------------
+
 ### **object_spawn_region** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_demolitions_master_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_convoy** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_convoy_end_point** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_courier_end_point** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_vehicle_spawn_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_riding_shotgun_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_area_defense_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_action_node** (*inherits [object](#object)*)
+Used for action nodes like the weapons locker and upgrade table.
+
+
+**animation_type** (*string*, Type=4):
+
+References an entry in `action_node_types.xtbl`. Should match the `Name` field of one of the entries. None of the other fields will load if this is not valid.
+
+
+**high_priority** (*bool*, Type=5, Size=1, Optional):
+
+Purpose unknown.
+
+
+**infinite_duration** (*bool*, Type=5, Size=1, Optional):
+
+Purpose unknown.
+
+
+**disabled** (*int*, Type=5, Size=4, Optional):
+
+Purpose unknown. Sets an int32 field `disabled_by` on the object. Could be referencing an object handle, but those are unsigned integers.
+
+
+**run_to** (*bool*, Type=5, Size=1, Optional):
+
+Purpose unknown.
+
+
+**obj_links** (*buffer*, Type=6, Size=Variable, Optional):
+
+Unconfirmed purpose. The conditions for this to be loaded are not known.
+
+
+**links** (*buffer*, Type=6, Size=Variable, Optional):
+
+Unconfirmed purpose. If the game tries to load `obj_links` and can't find it, then it tries to load this.
+
+
+----------------
 
 ### **object_raid_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_guard_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_house_arrest_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_safehouse** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_activity_spawn** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_squad_spawn_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_upgrade_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_path_road** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_bftp_node** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_mission_start_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **marauder_ambush_region** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_roadblock_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_restricted_area** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_delivery_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_ambient_behavior_region** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_npc_spawn_node** (*inherits [object](#object)*)
+
+----------------
 
 ### **object_patrol** (*inherits [object](#object)*)
 
@@ -949,22 +1257,42 @@ Options:
 
 ### **projectile** (*inherits [item](#item-inherits-object)*)
 
+----------------
+
 ### **vehicle** (*inherits [object](#object)*)
+
+----------------
 
 ### **automobile** (*inherits [vehicle](#vehicle-inherits-object)*)
 
+----------------
+
 ### **walker** (*inherits [vehicle](#vehicle-inherits-object)*)
+
+----------------
 
 ### **flyer** (*inherits [vehicle](#vehicle-inherits-object)*)
 
+----------------
+
 ### **human** (*inherits [object](#object)*)
+
+----------------
 
 ### **npc** (*inherits [human](#human-inherits-object)*)
 
+----------------
+
 ### **player** (*inherits [human](#human-inherits-object)*)
+
+----------------
 
 ### **turret** (*inherits [object](#object)*)
 
+----------------
+
 ### **object_debris** (*inherits [object](#object)*)
+
+----------------
 
 ### **district** (*inherits [object](#object)*)
