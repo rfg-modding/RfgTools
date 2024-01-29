@@ -518,7 +518,7 @@ Purpose unknown.
 Most likely the number of salvage pieces it drops when destroyed. Untested. It's most likely easier to use the variable with the same name in `gameplay_properties.xtbl`
 
 
-**game_destroyed_pct** (*int*, Type=5, Size=4, Optional):
+**game_destroyed_pct** (*float*, Type=5, Size=4, Optional):
 
 Purpose unknown. It's most likely easier to use the variable with the same name in `gameplay_properties.xtbl`
 
@@ -1236,22 +1236,7 @@ MP backpack object. Spawned by a `multi_object_marker` object with `marker_type`
 
 **backpack_type** (*enum(string)*, Type=4, Optional):
 
-Type of backpack to provide the players.
-
-Default: `Jetpack`
-
-Options:
-- `Commando`
-- `Fleetfoot`
-- `Heal`
-- `Jetpack`
-- `Kaboom`
-- `Rhino`
-- `Shockwave`
-- `Stealth`
-- `Thrust`
-- `Tremor`
-- `Vision`
+Type of backpack to provide the players. References an entry in mp_backpacks.xtbl.
 
 ----------------
 

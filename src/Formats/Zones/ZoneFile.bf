@@ -285,6 +285,24 @@ public struct RfgZoneObject
         return .Err;
     }
 
+    //Note: Temporarily grabbing this as byte span until Nanoforge actually needs constraints. Once that happens we'll just define the struct and use GetPropertyInternal<>()
+    public Result<Span<u8>> GetConstraintTemplate() mut
+    {
+        readonly u32 nameHash = Hash.HashVolitionCRC("template", 0);
+        for (Property* prop in Properties)
+        {
+            if (prop.NameHash == nameHash)
+            {
+                if (prop.Type != 5) //Only difference from GetBuffer() is that the type of this property is 5 instead of 6
+                    return .Err;
+
+                return Span<u8>((u8*)prop.Data, prop.Size);
+            }
+        }
+
+        return .Err;
+    }
+
     [CRepr, RequiredSize(8)]
     public struct Property
     {
