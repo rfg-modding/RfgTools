@@ -19,7 +19,7 @@ namespace RfgTools.Formats
             public u32 CompressedSize = 0;
 
             public List<Primitive> Primitives = new .() ~DeleteContainerAndItems!(_);
-            public List<u32> PrimitiveSizes = new .() ~delete _;
+            public List<i32> PrimitiveSizes = new .() ~delete _;
 
             public void Read(Stream stream)
             {
@@ -35,7 +35,7 @@ namespace RfgTools.Formats
 
                 //Read primitive sizes
                 for (int i in 0..<SizeCount)
-                    PrimitiveSizes.Add(stream.Read<u32>());
+                    PrimitiveSizes.Add(stream.Read<i32>());
 
                 //Read primitive metadata
                 for (int i in 0..<PrimitiveCount)
@@ -66,8 +66,8 @@ namespace RfgTools.Formats
                 stream.Write<u32>(CompressedSize);
 
                 //Write primitive sizes
-                for (u32 size in PrimitiveSizes)
-                    stream.Write<u32>(size);
+                for (i32 size in PrimitiveSizes)
+                    stream.Write<i32>(size);
 
                 //Write primitive metadata
                 for (Primitive primitive in Primitives)
@@ -125,6 +125,7 @@ namespace RfgTools.Formats
 
         public Result<void, StringView> Read(Stream stream, StringView name)
         {
+            stream.Seek(0);
             Name.Set(name);
             Signature = stream.Read<u32>();
             Version = stream.Read<u16>();
@@ -146,6 +147,7 @@ namespace RfgTools.Formats
 
         public Result<void, StringView> Write(Stream stream)
         {
+            stream.Seek(0);
             if (Containers.Count > u16.MaxValue)
                 return .Err(".asm_pc file exceeded container limit of 65535");
 
